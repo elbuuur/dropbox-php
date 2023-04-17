@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth;
+use App\Http\Controllers\FolderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,5 +18,9 @@ use App\Http\Controllers\Auth;
 
 Route::post('register', [Auth\RegisterController::class, 'register']);
 Route::post('login', [Auth\LoginController::class, 'login']);
-Route::post('user-info', [Auth\LoginController::class, 'info']);
 
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('user-info', [Auth\LoginController::class, 'info']);
+    Route::post('folder/create', [FolderController::class, 'create']);
+});
