@@ -5,6 +5,7 @@ namespace App\Models;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -27,5 +28,14 @@ class Folder extends Model
     public function created_by(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_id');
+    }
+
+    /**
+     * Get files for folder
+     * @return HasMany
+     */
+    public function files(): HasMany
+    {
+        return $this->hasMany(File::class);
     }
 }

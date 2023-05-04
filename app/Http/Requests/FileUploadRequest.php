@@ -26,7 +26,7 @@ class FileUploadRequest extends FormRequest
     {
         return [
             'file' => 'required|array',
-            'file.*' => 'required|file|max:20000',
+            'file.*' => 'required|file',
         ];
     }
 

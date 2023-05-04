@@ -20,7 +20,7 @@ class File extends Model implements HasMedia
 
     public function folder(): BelongsTo
     {
-        return $this->belongsTo(Folder::class, 'folder_id')->withTrashed();
+        return $this->belongsTo(Folder::class)->withTrashed();
     }
 
     public function created_by(): BelongsTo

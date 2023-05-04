@@ -6,6 +6,7 @@ use App\Models\Folder;
 use App\Http\Requests\FolderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\File;
 
 class FolderController extends Controller
 {
@@ -30,24 +31,53 @@ class FolderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function store(string $id)
     {
-        //
+        $folder = Folder::findOrFail($id);
+        $filesModel = $folder->files()->get();
+
+        $files = [];
+        foreach ($filesModel as $file) {
+            $files[] = $file->getMedia('file');
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => compact('folder', 'files'),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
+     * @param Request $request
+     * @param string $id
+     * @return JsonResponse
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
-        //
+        $folder = Folder::findOrFail($id);
+        $folder->folder_name = $request->folder_name;
+        $folder->save();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => compact('folder'),
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
+     * @param string $id
+     * @return JsonResponse
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
-        //
+        $folder = Folder::findOrFail($id);
+        $folder->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => compact('folder'),
+        ]);
     }
 }

@@ -23,6 +23,11 @@ Route::post('login', [Auth\LoginController::class, 'login']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('user-info', [Auth\LoginController::class, 'info']);
+
     Route::post('folder/create', [FolderController::class, 'create']);
+    Route::post('folder/{folder}', [FolderController::class, 'store']);
+    Route::put('folder/{folder}', [FolderController::class, 'update']);
+    Route::delete('folder/{folder}', [FolderController::class, 'destroy']);
+
     Route::post('file/upload', [FileController::class, 'create']);
 });
