@@ -21,28 +21,40 @@ class FileController extends Controller
      */
     public function create(FileUploadRequest $request): JsonResponse
     {
-        if($request->hasFile('file')){
+        try {
+            if ($request->hasFile('file')) {
+                $fileManager = new File();
+                $folderId = $request->folder_id;
 
-            $fileManager = new File();
+                if($folderId && !$this->isFolderExist($folderId)) {
+                    throw new \Exception('Folder does not exist');
+                }
 
-            $addedFiles = [];
-            foreach ($request->file as $file) {
-                $fileModel = $fileManager->create([
-                    'uuid' => (string)\Webpatser\Uuid\Uuid::generate(),
-                    'folder_id' => $request->folder_id ?: null,
-                    'created_by_id' => $request->user()->id
-                ]);
+                $addedFiles = [];
+                foreach ($request->file as $file) {
+                    if ($this->phpDetect($file)) {
+                        throw new \Exception('PHP files are not allowed to be uploaded');
+                    };
 
-                $media = $fileModel->addMedia($file)->toMediaCollection('file');
-                $addedFiles[] = $media;
+                    $fileModel = $fileManager->create([
+                        'uuid' => (string)\Webpatser\Uuid\Uuid::generate(),
+                        'folder_id' => $folderId ?: null,
+                        'created_by_id' => $request->user()->id
+                    ]);
+
+                    $media = $fileModel->addMedia($file)->toMediaCollection('file');
+                    $addedFiles[] = $media;
+                }
+
+                return response()->json([
+                    'status' => 'success',
+                    'data' => compact('addedFiles')
+                ], 200);
+            } else {
+                throw new \Exception('File not found');
             }
-
-            return response()->json([
-                'status' => 'success',
-                'data' => compact('addedFiles')
-            ],200);
-        } else {
-            return response()->json(['error' => 'Failed to upload files'], 400);
+        }catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 401);
         }
     }
 

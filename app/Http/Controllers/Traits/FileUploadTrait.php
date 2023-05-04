@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Traits;
 use App\Http\Requests\FileUploadRequest;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
+use App\Models\Folder;
 
 
 trait FileUploadTrait
@@ -41,18 +42,32 @@ trait FileUploadTrait
     }
 
     /**
-     * Check valid file type
+     * Check PHP file type
      * @param $file
      * @return bool
      */
-    private function phpTypeCheck($file): bool
+    public function phpDetect($file): bool
     {
         try {
-            if ($file->extension() == 'php') {
+            if (preg_match('/php/', $file->getClientMimeType())) {
                 throw new \Exception();
             }
-            return true;
+            return false;
         } catch (\Exception) {
+            return true;
+        }
+    }
+
+    /**
+     * Check exist folder
+     * @param $folderId
+     * @return bool
+     */
+    public function isFolderExist($folderId): bool
+    {
+        if (Folder::find($folderId)) {
+            return true;
+        } else {
             return false;
         }
     }
