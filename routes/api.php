@@ -26,8 +26,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('folder/create', [FolderController::class, 'create']);
     Route::post('folder/{folder}', [FolderController::class, 'store']);
-    Route::put('folder/{folder}', [FolderController::class, 'update']);
-    Route::delete('folder/{folder}', [FolderController::class, 'destroy']);
+    Route::apiResource('folder', FolderController::class)->except([
+        'create',
+        'store'
+    ]);
 
     Route::post('file/upload', [FileController::class, 'create']);
+    Route::post('file/download', [FileController::class, 'create']);
+    Route::apiResource('file', FileController::class)->except([
+        'create',
+        'store'
+    ]);
 });

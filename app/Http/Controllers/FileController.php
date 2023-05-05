@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Traits\FileUploadTrait;
-use App\Http\Requests\FileUploadRequest;
+use App\Http\Requests\UploadFileRequest;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Http\Requests\UpdateFileRequest;
 
 class FileController extends Controller
 {
@@ -16,10 +17,10 @@ class FileController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     * @param FileUploadRequest $request
+     * @param UploadFileRequest $request
      * @return JsonResponse
      */
-    public function create(FileUploadRequest $request): JsonResponse
+    public function create(UploadFileRequest $request): JsonResponse
     {
         try {
             if ($request->hasFile('file')) {
@@ -61,40 +62,59 @@ class FileController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(FileUploadRequest $request)
+    public function store(UploadFileRequest $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(File $file)
+
+    public function download(File $file)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(File $file)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
+     * @param UpdateFileRequest $request
+     * @param File $file
+     * @return JsonResponse
      */
-    public function update(UpdateFileRequest $request, File $file)
+    public function update(UpdateFileRequest $request, File $file): JsonResponse
     {
-        //
+        $fileName = str_replace(" ", "_", $request->file_name);
+        $folderId = $request->folder_id;
+
+        if($fileName) {
+            $media = $file->getMedia('file')->first();
+            $media->file_name = $fileName;
+            $media->name = $fileName;
+            $media->save();
+        }
+
+        if($folderId) {
+            $file->folder_id = $folderId;
+            $file->save();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => compact('file')
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
+     * @param File $file
+     * @return JsonResponse
      */
-    public function destroy(File $file)
+    public function destroy(File $file): JsonResponse
     {
-        //
+        $file->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => compact('file')
+        ], 200);
     }
 }

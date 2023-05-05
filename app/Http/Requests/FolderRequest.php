@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class FolderRequest extends FormRequest
 {
@@ -24,5 +26,18 @@ class FolderRequest extends FormRequest
         return [
             'folder_name' => 'required|string|unique:folders',
         ];
+    }
+
+    /**
+     * @param Validator $validator
+     * @return HttpResponseException
+     */
+    public function failedValidation(Validator $validator): HttpResponseException
+    {
+        throw new HttpResponseException(response()->json([
+            'success'   => false,
+            'message'   => 'Validation errors',
+            'data'      => $validator->errors()
+        ]));
     }
 }

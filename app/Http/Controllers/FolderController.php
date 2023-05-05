@@ -30,8 +30,10 @@ class FolderController extends Controller
 
     /**
      * Display the specified resource.
+     * @param string $id
+     * @return JsonResponse
      */
-    public function store(string $id)
+    public function store(string $id): JsonResponse
     {
         $folder = Folder::findOrFail($id);
         $filesModel = $folder->files()->get();
@@ -49,11 +51,11 @@ class FolderController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
+     * @param FolderRequest $request
      * @param string $id
      * @return JsonResponse
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(FolderRequest $request, string $id): JsonResponse
     {
         $folder = Folder::findOrFail($id);
         $folder->folder_name = $request->folder_name;

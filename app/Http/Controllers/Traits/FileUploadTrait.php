@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Traits;
 
-use App\Http\Requests\FileUploadRequest;
+use App\Http\Requests\UploadFileRequest;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
 use App\Models\Folder;
@@ -12,10 +12,10 @@ trait FileUploadTrait
 {
     /**
      * File upload trait used in controllers to upload files
-     * @param FileUploadRequest $request
+     * @param UploadFileRequest $request
      * @return array|Request
      */
-    public function uploadFiles(FileUploadRequest $request): array
+    public function uploadFiles(UploadFileRequest $request): array
     {
         $uploadPath = storage_path('app/public/files');
         if (!file_exists($uploadPath)) {

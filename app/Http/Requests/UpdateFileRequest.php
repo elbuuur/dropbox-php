@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
-class RegisterRequest extends FormRequest
+class UpdateFileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,11 +24,7 @@ class RegisterRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => 'required',
-            'email' => 'required|string|unique:users|email',
-            'password' => 'required|min:8',
-        ];
+        return [];
     }
 
     /**
