@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\DownloadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,16 +26,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('user-info', [Auth\LoginController::class, 'info']);
 
     Route::post('folder/create', [FolderController::class, 'create']);
-    Route::post('folder/{folder}', [FolderController::class, 'store']);
+    Route::post('folder/{folder}', [FolderController::class, 'index']);
     Route::apiResource('folder', FolderController::class)->except([
         'create',
         'store'
     ]);
 
     Route::post('file/upload', [FileController::class, 'create']);
-    Route::post('file/download', [FileController::class, 'create']);
     Route::apiResource('file', FileController::class)->except([
         'create',
         'store'
     ]);
+
+    Route::get('download/{mediaUuid}', [DownloadController::class, 'downloadFile']);
+
 });

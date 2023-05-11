@@ -6,10 +6,8 @@ use App\Http\Controllers\Traits\FileUploadTrait;
 use App\Http\Requests\UploadFileRequest;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Http\Requests\UpdateFileRequest;
+use App\Http\Requests\FileRequest;
+
 
 class FileController extends Controller
 {
@@ -60,27 +58,12 @@ class FileController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(UploadFileRequest $request)
-    {
-        //
-    }
-
-
-    public function download(File $file)
-    {
-        //
-    }
-
-
-    /**
      * Update the specified resource in storage.
-     * @param UpdateFileRequest $request
+     * @param FileRequest $request
      * @param File $file
      * @return JsonResponse
      */
-    public function update(UpdateFileRequest $request, File $file): JsonResponse
+    public function update(FileRequest $request, File $file): JsonResponse
     {
         $fileName = str_replace(" ", "_", $request->file_name);
         $folderId = $request->folder_id;

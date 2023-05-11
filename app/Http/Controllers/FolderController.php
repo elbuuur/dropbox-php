@@ -33,7 +33,7 @@ class FolderController extends Controller
      * @param string $id
      * @return JsonResponse
      */
-    public function store(string $id): JsonResponse
+    public function index(string $id): JsonResponse
     {
         $folder = Folder::findOrFail($id);
         $filesModel = $folder->files()->get();

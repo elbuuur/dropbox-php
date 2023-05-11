@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
-class UpdateFileRequest extends FormRequest
+class FileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
