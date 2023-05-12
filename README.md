@@ -15,4 +15,4 @@
 Также в .env файле нужно определить переменную `SWAGGER_API_BASEURL=http://localhost/api`
 
 
-На данный момент все методы лежат в одном разделе: [http://localhost/api/documentation#/default](http://localhost/api/documentation#/default)
+На данный момент все методы лежат в одном разделе: [http://localhost/api/documentation#/](http://localhost/api/documentation#/)
