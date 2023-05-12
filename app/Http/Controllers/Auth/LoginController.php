@@ -10,11 +10,14 @@ use App\Http\Requests\LoginRequest;
 use Carbon\Carbon;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Traits\LoginTrait;
 
 
 
 class LoginController extends Controller
 {
+    use LoginTrait;
+
     /**
      * Auth user.
      *
@@ -69,21 +72,8 @@ class LoginController extends Controller
                 'message' => 'Invalid credentials'
             ],401);
         }
-        return $this->createToken();
-    }
 
-    /**
-     * Create token for user
-     * @return JsonResponse
-     */
-    protected function createToken(): JsonResponse
-    {
-        $user = auth()->user();
-
-        $user->tokens()
-            ->where('name', 'apiToken')
-            ->where('last_used_at', '<', Carbon::now()->modify("-1440 minutes"))
-            ->delete();
+        $user = $this->createToken();
 
         return response()->json([
             'status' => 'success',
