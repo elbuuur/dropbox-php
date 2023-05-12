@@ -16,7 +16,48 @@ use Illuminate\Http\Request;
 class LoginController extends Controller
 {
     /**
-     * Auth user
+     * Auth user.
+     *
+     * @OA\Post(
+     *     path="/login",
+     *     summary="Auth user",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="email", type="string", format="email", example="johndoe@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="secret12")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Registration successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="token", type="string", example="6|k8XYboI6nEOEUtoS6DUbr3jWbfSsPgkQ58wXD.."),
+     *                 @OA\Property(property="lifetime", type="integer", example=1440),
+     *                 @OA\Property(
+     *                      property="user",
+     *                      type="object",
+     *                      @OA\Property(property="id", type="integer", example=1),
+     *                      @OA\Property(property="name", type="string", example="Super Dog")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Invalid credentials",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Invalid credentials")
+     *         )
+     *     )
+     * )
+     *
      * @param LoginRequest $request
      * @return JsonResponse
      */
@@ -24,11 +65,9 @@ class LoginController extends Controller
     {
         if(!auth()->attempt($request->toArray())) {
             return response()->json([
-                'error' => [
-                    'error_code' => 2,
-                    'error_msg' => __('auth.invalid_credentials'),
-                ],
-            ], 401);
+                'status' => 'error',
+                'message' => 'Invalid credentials'
+            ],401);
         }
         return $this->createToken();
     }
@@ -63,6 +102,43 @@ class LoginController extends Controller
 
     /**
      * Get user information
+     *
+     * @OA\Post(
+     *     path="/user-info",
+     *     summary="Get user information",
+     *     tags={"Auth"},
+     *     security={ {"sanctum": {} }},
+     *     description="Send bearer token",
+     *     @OA\Response(
+     *         response="200",
+     *         description="Get user information",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="user",
+     *                      type="object",
+     *                      @OA\Property(property="id", type="integer", example=1),
+     *                      @OA\Property(property="name", type="string", example="Super Dog"),
+     *                      @OA\Property(property="email", type="string", example="johndoe@example.com"),
+     *                      @OA\Property(property="created_at", type="string", format="date-time"),
+     *                      @OA\Property(property="updated_at", type="string", format="date-time"),
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Invalid credentials",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Invalid credentials")
+     *         )
+     *     )
+     * )
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -73,10 +149,8 @@ class LoginController extends Controller
 
             if (empty($token)) {
                 return response()->json([
-                    'error' => [
-                        'error_code' => 2,
-                        'error_msg' => __('auth.not_found_token')
-                    ]
+                    'status' => 'error',
+                    'message'   => 'Not found token',
                 ], 422);
             }
 
