@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Traits\FileUploadTrait;
+use App\Http\Requests\FolderRequest;
 use App\Http\Requests\UploadFileRequest;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +15,69 @@ class FileController extends Controller
     use FileUploadTrait;
 
     /**
-     * Show the form for creating a new resource.
+     * Upload multiple files.
+     *
+     * @OA\Post(
+     *     path="/api/file/upload",
+     *     summary="Upload multiple files",
+     *     tags={"File"},
+     *     security={ {"sanctum": {} }},
+     *     description="Send bearer token, folder id and file (s)",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="folder_id",
+     *                     type="string",
+     *                     nullable=true
+     *                 ),
+     *                 @OA\Property(
+     *                     property="file",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="string",
+     *                         format="binary"
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Uploaded file(s)",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="addedFiles",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          type="object",
+     *                          @OA\Property(property="file_name", type="string", example="IMG_0514.jpg"),
+     *                          @OA\Property(property="id", type="integer", example=36),
+     *                          @OA\Property(property="extension", type="string", example="JPG"),
+     *                          @OA\Property(property="size", type="integer", example=5199684),
+     *                          @OA\Property(property="media_id", type="integer", example=12),
+     *                          @OA\Property(property="folder_id", type="integer", example=4),
+     *                      )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="422",
+     *         description="Validate error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Validation errors")
+     *         )
+     *     )
+     * )
+     *
      * @param UploadFileRequest $request
      * @return JsonResponse
      */
@@ -23,7 +86,7 @@ class FileController extends Controller
         try {
             if ($request->hasFile('file')) {
                 $fileManager = new File();
-                $folderId = $request->folder_id;
+                $folderId = (int)$request->folder_id;
 
                 if($folderId && !$this->isFolderExist($folderId)) {
                     throw new \Exception('Folder does not exist');
@@ -42,7 +105,15 @@ class FileController extends Controller
                     ]);
 
                     $media = $fileModel->addMedia($file)->toMediaCollection('file');
-                    $addedFiles[] = $media;
+                    $addedFiles[] = [
+                        'file_name' => $media['file_name'],
+                        'uuid' => $fileModel['uuid'],
+                        'id' => $media['model_id'],
+                        'extension' => $media['extension'],
+                        'size' => $media['size'],
+                        'media_id' => $media['id'],
+                        'folder_id' => $fileModel['folder_id']
+                    ];
                 }
 
                 return response()->json([
@@ -53,12 +124,76 @@ class FileController extends Controller
                 throw new \Exception('File not found');
             }
         }catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 401);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
         }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update file.
+     *
+     * @OA\Put(
+     *     path="/api/file/{id}",
+     *     summary="Update file",
+     *     tags={"File"},
+     *     security={ {"sanctum": {} }},
+     *     description="Send bearer token, file id and file info",
+     *     @OA\Parameter(
+     *         description="File id",
+     *         in="path",
+     *         name="id",
+     *         required=true,
+     *         example="30"
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="file_name",
+     *                     type="string",
+     *                     example="summer.png"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="folder_id",
+     *                     type="integer",
+     *                     nullable=true,
+     *                     example=4
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Update File",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="folder",
+     *                      type="object",
+     *                          @OA\Property(property="file_name", type="string", example="IMG_0514.jpg"),
+     *                          @OA\Property(property="id", type="integer", example=36),
+     *                          @OA\Property(property="extension", type="string", example="JPG"),
+     *                          @OA\Property(property="size", type="integer", example=5199684),
+     *                          @OA\Property(property="media_id", type="integer", example=12),
+     *                          @OA\Property(property="folder_id", type="integer", example=4),
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="422",
+     *         description="Validate error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Validation errors")
+     *         )
+     *     ),
+     * )
+     *
      * @param FileRequest $request
      * @param File $file
      * @return JsonResponse
@@ -66,10 +201,10 @@ class FileController extends Controller
     public function update(FileRequest $request, File $file): JsonResponse
     {
         $fileName = str_replace(" ", "_", $request->file_name);
-        $folderId = $request->folder_id;
+        $folderId = (int)$request->folder_id;
+        $media = $file->getMedia('file')->first();
 
         if($fileName) {
-            $media = $file->getMedia('file')->first();
             $media->file_name = $fileName;
             $media->name = $fileName;
             $media->save();
@@ -80,14 +215,60 @@ class FileController extends Controller
             $file->save();
         }
 
+        $data = [
+            'file_name' => $media['file_name'],
+            'uuid' => $file['uuid'],
+            'id' => $file['id'],
+            'extension' => $media['extension'],
+            'size' => $media['size'],
+            'media_id' => $media['id'],
+            'folder_id' => $file['folder_id']
+        ];
+
         return response()->json([
             'status' => 'success',
-            'data' => compact('file')
+            'data' => compact('data')
         ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @OA\Delete(
+     *     path="/api/file/{id}",
+     *     summary="Delete file",
+     *     tags={"File"},
+     *     security={ {"sanctum": {} }},
+     *     description="Send bearer token and file id",
+     *     @OA\Parameter(
+     *         description="File id",
+     *         in="path",
+     *         name="id",
+     *         required=true,
+     *         example="39"
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Delete File",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="file",
+     *                      type="object",
+     *                      @OA\Property(property="id", type="integer", example=36),
+     *                      @OA\Property(property="folder_id", type="integer", example=4),
+     *                      @OA\Property(property="created_at", type="string", format="date-time"),
+     *                      @OA\Property(property="updated_at", type="string", format="date-time"),
+     *                      @OA\Property(property="deleted_at", type="string", format="date-time")
+     *                 ),
+     *             )
+     *         )
+     *     )
+     * )
+     *
      * @param File $file
      * @return JsonResponse
      */
