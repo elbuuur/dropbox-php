@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Folder;
 use App\Http\Requests\FolderRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use App\Models\File;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class FolderController extends Controller
 {
@@ -132,6 +131,14 @@ class FolderController extends Controller
      *                 ),
      *             )
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Folder not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Folder not found or deleted"),
+     *         )
      *     )
      * )
      *
@@ -140,18 +147,37 @@ class FolderController extends Controller
      */
     public function index(string $id): JsonResponse
     {
-        $folder = Folder::findOrFail($id);
-        $filesModel = $folder->files()->get();
+        try {
+            $folder = Folder::findOrFail($id);
+            $filesModel = $folder->files()
+                ->whereNull('deleted_at')
+                ->get();
 
-        $files = [];
-        foreach ($filesModel as $file) {
-            $files[] = $file->getMedia('file');
+            $files = [];
+            foreach ($filesModel as $file) {
+                $mediaFile = $file->getMedia('file')->first();
+                $files[] = [
+                    'file_name' => $mediaFile->file_name,
+                    'uuid' => $file['uuid'],
+                    'id' => $file['id'],
+                    'extension' => $mediaFile->extension,
+                    'size' => $mediaFile->size,
+                    'media_id' => $mediaFile->id,
+                    'folder_id' => $file['folder_id']
+                ];
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => compact('folder', 'files'),
+            ]);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Folder not found or deleted'
+            ], 404);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => compact('folder', 'files'),
-        ]);
     }
 
     /**

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Traits\FileUploadTrait;
-use App\Http\Requests\FolderRequest;
 use App\Http\Requests\UploadFileRequest;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\FileRequest;
+use App\Http\Resources\FileResource;
 
 
 class FileController extends Controller
