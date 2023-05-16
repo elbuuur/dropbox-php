@@ -59,6 +59,7 @@ class FileController extends Controller
      *                          type="object",
      *                          @OA\Property(property="file_name", type="string", example="IMG_0514.jpg"),
      *                          @OA\Property(property="id", type="integer", example=36),
+     *                          @OA\Property(property="uuid", type="string", example="b28b6620-f3ed-11ed-8030-bb9a329c1263"),
      *                          @OA\Property(property="extension", type="string", example="JPG"),
      *                          @OA\Property(property="size", type="integer", example=5199684),
      *                          @OA\Property(property="media_id", type="integer", example=12),
@@ -107,7 +108,7 @@ class FileController extends Controller
                     $media = $fileModel->addMedia($file)->toMediaCollection('file');
                     $addedFiles[] = [
                         'file_name' => $media['file_name'],
-                        'uuid' => $fileModel['uuid'],
+                        'uuid' => $media['uuid'],
                         'id' => $media['model_id'],
                         'extension' => $media['extension'],
                         'size' => $media['size'],
@@ -175,6 +176,7 @@ class FileController extends Controller
      *                      property="folder",
      *                      type="object",
      *                          @OA\Property(property="file_name", type="string", example="IMG_0514.jpg"),
+     *                          @OA\Property(property="uuid", type="string", example="b28b6620-f3ed-11ed-8030-bb9a329c1263"),
      *                          @OA\Property(property="id", type="integer", example=36),
      *                          @OA\Property(property="extension", type="string", example="JPG"),
      *                          @OA\Property(property="size", type="integer", example=5199684),
@@ -217,12 +219,12 @@ class FileController extends Controller
 
         $data = [
             'file_name' => $media['file_name'],
-            'uuid' => $file['uuid'],
+            'uuid' => $media['uuid'],
             'id' => $file['id'],
             'extension' => $media['extension'],
             'size' => $media['size'],
             'media_id' => $media['id'],
-            'folder_id' => $file['folder_id']
+            'folder_id' => $file['folder_id'],
         ];
 
         return response()->json([

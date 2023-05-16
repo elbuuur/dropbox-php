@@ -158,7 +158,7 @@ class FolderController extends Controller
                 $mediaFile = $file->getMedia('file')->first();
                 $files[] = [
                     'file_name' => $mediaFile->file_name,
-                    'uuid' => $file['uuid'],
+                    'uuid' => $mediaFile->uuid,
                     'id' => $file['id'],
                     'extension' => $mediaFile->extension,
                     'size' => $mediaFile->size,

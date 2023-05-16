@@ -300,6 +300,35 @@
                 }
             }
         },
+        "download/{uuid}": {
+            "get": {
+                "tags": [
+                    "File"
+                ],
+                "summary": "Download file",
+                "description": "Send bearer token, media uuid",
+                "operationId": "a81c7354727601aaf23e2355a82ea545",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "uuid",
+                        "required": true,
+                        "example": "4ea31e34-e0cd-4aea-b489-043470f8c4e5"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/file/upload": {
             "post": {
                 "tags": [
@@ -355,6 +384,10 @@
                                                             "id": {
                                                                 "type": "integer",
                                                                 "example": 36
+                                                            },
+                                                            "uuid": {
+                                                                "type": "string",
+                                                                "example": "b28b6620-f3ed-11ed-8030-bb9a329c1263"
                                                             },
                                                             "extension": {
                                                                 "type": "string",
@@ -469,6 +502,10 @@
                                                         "file_name": {
                                                             "type": "string",
                                                             "example": "IMG_0514.jpg"
+                                                        },
+                                                        "uuid": {
+                                                            "type": "string",
+                                                            "example": "b28b6620-f3ed-11ed-8030-bb9a329c1263"
                                                         },
                                                         "id": {
                                                             "type": "integer",
