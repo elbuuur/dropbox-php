@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,4 +41,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('download/{mediaUuid}', [DownloadController::class, 'downloadFile']);
 
+    Route::post('home', [HomeController::class, 'getStructureFromRoot']);
 });
