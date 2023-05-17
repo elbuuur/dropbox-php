@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Traits\FileUploadTrait;
+use App\Http\Controllers\Traits\FileStructureTrait;
 use App\Http\Requests\UploadFileRequest;
 use App\Models\File;
 use Illuminate\Http\JsonResponse;
@@ -12,7 +13,7 @@ use App\Http\Resources\FileResource;
 
 class FileController extends Controller
 {
-    use FileUploadTrait;
+    use FileUploadTrait, FileStructureTrait;
 
     /**
      * Upload multiple files.
@@ -106,15 +107,7 @@ class FileController extends Controller
                     ]);
 
                     $media = $fileModel->addMedia($file)->toMediaCollection('file');
-                    $addedFiles[] = [
-                        'file_name' => $media['file_name'],
-                        'uuid' => $media['uuid'],
-                        'id' => $media['model_id'],
-                        'extension' => $media['extension'],
-                        'size' => $media['size'],
-                        'media_id' => $media['id'],
-                        'folder_id' => $fileModel['folder_id']
-                    ];
+                    $addedFiles[] = $this->formatData($fileModel, $media);
                 }
 
                 return response()->json([
@@ -217,15 +210,7 @@ class FileController extends Controller
             $file->save();
         }
 
-        $data = [
-            'file_name' => $media['file_name'],
-            'uuid' => $media['uuid'],
-            'id' => $file['id'],
-            'extension' => $media['extension'],
-            'size' => $media['size'],
-            'media_id' => $media['id'],
-            'folder_id' => $file['folder_id'],
-        ];
+        $data = $this->formatData($file, $media);
 
         return response()->json([
             'status' => 'success',

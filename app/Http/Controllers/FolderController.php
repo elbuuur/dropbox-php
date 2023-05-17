@@ -6,9 +6,12 @@ use App\Models\Folder;
 use App\Http\Requests\FolderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Traits\FileStructureTrait;
 
 class FolderController extends Controller
 {
+    use FileStructureTrait;
+
     /**
      * User folder create
      *
@@ -156,15 +159,7 @@ class FolderController extends Controller
             $files = [];
             foreach ($filesModel as $file) {
                 $mediaFile = $file->getMedia('file')->first();
-                $files[] = [
-                    'file_name' => $mediaFile->file_name,
-                    'uuid' => $mediaFile->uuid,
-                    'id' => $file['id'],
-                    'extension' => $mediaFile->extension,
-                    'size' => $mediaFile->size,
-                    'media_id' => $mediaFile->id,
-                    'folder_id' => $file['folder_id']
-                ];
+                $files[] = $this->formatData($file, $mediaFile);
             }
 
             return response()->json([

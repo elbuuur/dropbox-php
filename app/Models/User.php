@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Folder;
+use App\Models\File;
 
 class User extends Authenticatable
 {
@@ -48,6 +50,11 @@ class User extends Authenticatable
      */
     public function folder(): HasMany
     {
-        return $this->hasMany(Folder::class);
+        return $this->hasMany(Folder::class, 'created_by_id');
+    }
+
+    public function file(): HasMany
+    {
+        return $this->hasMany(File::class, 'created_by_id');
     }
 }
