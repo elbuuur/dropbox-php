@@ -919,6 +919,10 @@
                                                             "size": {
                                                                 "type": "integer",
                                                                 "example": 5199684
+                                                            },
+                                                            "folder_id": {
+                                                                "type": "integer",
+                                                                "example": 4
                                                             }
                                                         },
                                                         "type": "object"
@@ -1020,6 +1024,129 @@
                                                 }
                                             },
                                             "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/home": {
+            "post": {
+                "tags": [
+                    "Root"
+                ],
+                "summary": "Structure from root",
+                "description": "Send bearer token",
+                "operationId": "7f5058287fd9887134c63bda9f4e422d",
+                "responses": {
+                    "200": {
+                        "description": "Structure from root",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "folder": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "folder_name": {
+                                                            "type": "string",
+                                                            "example": "Holidays"
+                                                        },
+                                                        "created_by_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "updated_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "files": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514"
+                                                            },
+                                                            "file_name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514.jpg"
+                                                            },
+                                                            "uuid": {
+                                                                "type": "string",
+                                                                "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
+                                                            },
+                                                            "preview_url": {
+                                                                "type": "string",
+                                                                "example": ""
+                                                            },
+                                                            "original_url": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/10/IMG_0514.JPG"
+                                                            },
+                                                            "extension": {
+                                                                "type": "string",
+                                                                "example": "JPG"
+                                                            },
+                                                            "size": {
+                                                                "type": "integer",
+                                                                "example": 5199684
+                                                            },
+                                                            "folder_id": {
+                                                                "type": "integer",
+                                                                "example": null
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Folder not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Folder not found or deleted"
                                         }
                                     },
                                     "type": "object"

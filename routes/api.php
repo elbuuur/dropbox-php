@@ -33,7 +33,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         'store'
     ]);
 
-    Route::post('file/upload', [FileController::class, 'create']);
+    Route::post('file/upload', [FileController::class, 'upload'])->middleware('checkFileLimit');
     Route::apiResource('file', FileController::class)->except([
         'create',
         'store'

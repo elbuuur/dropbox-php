@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\UpdateMemoryLimitTrait;
 use App\Http\Controllers\Traits\FileUploadTrait;
 use App\Http\Controllers\Traits\FileStructureTrait;
 use App\Http\Requests\UploadFileRequest;
@@ -13,7 +14,7 @@ use App\Http\Resources\FileResource;
 
 class FileController extends Controller
 {
-    use FileUploadTrait, FileStructureTrait;
+    use FileUploadTrait, FileStructureTrait, UpdateMemoryLimitTrait;
 
     /**
      * Upload multiple files.
@@ -83,11 +84,12 @@ class FileController extends Controller
      * @param UploadFileRequest $request
      * @return JsonResponse
      */
-    public function create(UploadFileRequest $request): JsonResponse
+    public function upload(UploadFileRequest $request): JsonResponse
     {
         try {
             if ($request->hasFile('file')) {
                 $fileManager = new File();
+                $user = auth()->user();
                 $folderId = (int)$request->folder_id;
 
                 if($folderId && !$this->isFolderExist($folderId)) {
@@ -95,6 +97,7 @@ class FileController extends Controller
                 }
 
                 $addedFiles = [];
+                $fileSize = null;
                 foreach ($request->file as $file) {
                     if ($this->phpDetect($file)) {
                         throw new \Exception('PHP files are not allowed to be uploaded');
@@ -108,7 +111,11 @@ class FileController extends Controller
 
                     $media = $fileModel->addMedia($file)->toMediaCollection('file');
                     $addedFiles[] = $this->formatData($fileModel, $media);
+
+                    $fileSize += $media->size;
                 }
+
+                $this->updateLimitAfterUpload($user, $fileSize);
 
                 return response()->json([
                     'status' => 'success',
@@ -262,6 +269,8 @@ class FileController extends Controller
     public function destroy(File $file): JsonResponse
     {
         $file->delete();
+
+        $this->updateLimitAfterDelete($file);
 
         return response()->json([
             'status' => 'success',

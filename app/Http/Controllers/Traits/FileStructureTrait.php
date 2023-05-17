@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers\Traits;
 
-use App\Http\Requests\UploadFileRequest;
-use Illuminate\Http\Request;
-use App\Models\Folder;
-
 
 trait FileStructureTrait
 {
