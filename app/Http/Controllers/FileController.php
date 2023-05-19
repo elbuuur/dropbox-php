@@ -55,7 +55,7 @@ class FileController extends Controller
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(
-     *                      property="addedFiles",
+     *                      property="files",
      *                      type="array",
      *                      @OA\Items(
      *                          type="object",
@@ -110,7 +110,7 @@ class FileController extends Controller
                     ]);
 
                     $media = $fileModel->addMedia($file)->toMediaCollection('file');
-                    $addedFiles[] = $this->formatData($fileModel, $media);
+                    $addedFiles[] = $this->fileFormatData($fileModel, $media);
 
                     $fileSize += $media->size;
                 }
@@ -119,7 +119,9 @@ class FileController extends Controller
 
                 return response()->json([
                     'status' => 'success',
-                    'data' => compact('addedFiles')
+                    'data' => [
+                        'files' => $addedFiles
+                    ]
                 ], 200);
             } else {
                 throw new \Exception('File not found');
@@ -173,7 +175,7 @@ class FileController extends Controller
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(
-     *                      property="folder",
+     *                      property="file",
      *                      type="object",
      *                          @OA\Property(property="file_name", type="string", example="IMG_0514.jpg"),
      *                          @OA\Property(property="uuid", type="string", example="b28b6620-f3ed-11ed-8030-bb9a329c1263"),
@@ -217,11 +219,11 @@ class FileController extends Controller
             $file->save();
         }
 
-        $data = $this->formatData($file, $media);
-
         return response()->json([
             'status' => 'success',
-            'data' => compact('data')
+            'data' => [
+                'file' => $this->fileFormatData($file, $media)
+            ]
         ], 200);
     }
 

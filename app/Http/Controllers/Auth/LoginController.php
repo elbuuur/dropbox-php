@@ -46,7 +46,8 @@ class LoginController extends Controller
      *                      property="user",
      *                      type="object",
      *                      @OA\Property(property="id", type="integer", example=1),
-     *                      @OA\Property(property="name", type="string", example="Super Dog")
+     *                      @OA\Property(property="name", type="string", example="Super Dog"),
+     *                      @OA\Property(property="upload_limit", type="integer", example=66464468),
      *                 )
      *             )
      *         )
@@ -83,6 +84,7 @@ class LoginController extends Controller
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
+                    'upload_limit' => $user->upload_limit
                 ]
             ],
         ])->withHeaders([
@@ -113,6 +115,7 @@ class LoginController extends Controller
      *                      @OA\Property(property="id", type="integer", example=1),
      *                      @OA\Property(property="name", type="string", example="Super Dog"),
      *                      @OA\Property(property="email", type="string", example="johndoe@example.com"),
+     *                      @OA\Property(property="upload_limit", type="integer", example=66464468),
      *                      @OA\Property(property="created_at", type="string", format="date-time"),
      *                      @OA\Property(property="updated_at", type="string", format="date-time"),
      *                 )

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\FolderStructureTrait;
 use App\Models\Folder;
 use App\Http\Requests\FolderRequest;
 use Illuminate\Http\JsonResponse;
@@ -10,7 +11,7 @@ use App\Http\Controllers\Traits\FileStructureTrait;
 
 class FolderController extends Controller
 {
-    use FileStructureTrait;
+    use FileStructureTrait, FolderStructureTrait;
 
     /**
      * User folder create
@@ -152,16 +153,22 @@ class FolderController extends Controller
     public function index(string $id): JsonResponse
     {
         try {
-            $folder = Folder::findOrFail($id);
-            $filesModel = $folder->files()
+            $folderModel = Folder::findOrFail($id);
+            $filesModel = $folderModel->files()
                 ->whereNull('deleted_at')
                 ->get();
 
             $files = [];
+            $folderSize = null;
+
             foreach ($filesModel as $file) {
                 $mediaFile = $file->getMedia('file')->first();
-                $files[] = $this->formatData($file, $mediaFile);
+                $files[] = $this->fileFormatData($file, $mediaFile);
+
+                $folderSize += $mediaFile->size;
             }
+
+            $folder = $this->folderFormatData($folderModel, $folderSize);
 
             return response()->json([
                 'status' => 'success',

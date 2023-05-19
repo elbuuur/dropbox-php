@@ -65,6 +65,10 @@
                                                         "name": {
                                                             "type": "string",
                                                             "example": "Super Dog"
+                                                        },
+                                                        "upload_limit": {
+                                                            "type": "integer",
+                                                            "example": 66464468
                                                         }
                                                     },
                                                     "type": "object"
@@ -135,6 +139,10 @@
                                                         "email": {
                                                             "type": "string",
                                                             "example": "johndoe@example.com"
+                                                        },
+                                                        "upload_limit": {
+                                                            "type": "integer",
+                                                            "example": 66464468
                                                         },
                                                         "created_at": {
                                                             "type": "string",
@@ -336,7 +344,7 @@
                 ],
                 "summary": "Upload multiple files",
                 "description": "Send bearer token, folder id and file (s)",
-                "operationId": "3f38a4cb8acadef4bf0040d9c43eaa74",
+                "operationId": "5c75b5747cfc41d9df3f220a245753b4",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -497,7 +505,7 @@
                                         },
                                         "data": {
                                             "properties": {
-                                                "folder": {
+                                                "file": {
                                                     "properties": {
                                                         "file_name": {
                                                             "type": "string",

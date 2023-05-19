@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Traits;
 
 trait FileStructureTrait
 {
-   public function formatData($file, $media): array
+   public function fileFormatData($file, $media): array
    {
        return [
            'file_name' => $media['file_name'],
