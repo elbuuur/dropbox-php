@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Traits\FolderStructureTrait;
+use App\Http\Controllers\Traits\FolderTrait;
 use App\Models\Folder;
 use App\Http\Requests\FolderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Traits\FileStructureTrait;
+use App\Http\Controllers\Traits\UpdateMemoryLimitTrait;
 
 class FolderController extends Controller
 {
-    use FileStructureTrait, FolderStructureTrait;
+    use FileStructureTrait, FolderTrait, UpdateMemoryLimitTrait;
 
     /**
      * User folder create
@@ -294,6 +295,13 @@ class FolderController extends Controller
     public function destroy(string $id): JsonResponse
     {
         $folder = Folder::findOrFail($id);
+
+        $filesModel = $folder->files()->get();
+        foreach ($filesModel as $file) {
+            $file->delete();
+            $this->updateLimitAfterDelete($file);
+        }
+
         $folder->delete();
 
         return response()->json([

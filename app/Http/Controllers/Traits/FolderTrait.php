@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Traits;
 
 
-trait FolderStructureTrait
+trait FolderTrait
 {
    public function folderFormatData($folderModel, $folderSize): array
    {

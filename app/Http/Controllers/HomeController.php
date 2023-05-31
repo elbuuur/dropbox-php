@@ -78,7 +78,7 @@ class HomeController extends Controller
         $files = [];
         foreach ($filesModel as $file) {
             $mediaFile = $file->getMedia('file')->first();
-            $files[] = $this->formatData($file, $mediaFile);
+            $files[] = $this->fileFormatData($file, $mediaFile);
         }
 
         return response()->json([
