@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Traits;
 use Illuminate\Support\Facades\Cache;
 
 
-trait InvalidateUserCacheTrait
+trait InvalidateCacheTrait
 {
     public function invalidateUserCache($userId): void
     {
