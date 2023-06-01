@@ -7,10 +7,10 @@ use App\Models\User;
 use App\Modules\Settings\Models\RolesActionValue;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\LoginRequest;
-use Carbon\Carbon;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Traits\LoginTrait;
+use Illuminate\Support\Facades\Cache;
 
 
 
@@ -148,7 +148,13 @@ class LoginController extends Controller
             }
 
             /** @var User $user */
-            $user = $token->tokenable;
+
+            $cacheKey = 'user_info_' . $token->tokenable->id;
+            $cacheDurationInMinutes = 60;
+
+            $user = Cache::remember($cacheKey, $cacheDurationInMinutes, function () use ($token) {
+                return $token->tokenable;
+            });
 
             return response()->json([
                 'status' => 'success',

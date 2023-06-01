@@ -381,7 +381,7 @@
                                         },
                                         "data": {
                                             "properties": {
-                                                "addedFiles": {
+                                                "files": {
                                                     "type": "array",
                                                     "items": {
                                                         "properties": {
