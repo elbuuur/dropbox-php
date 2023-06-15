@@ -14,7 +14,8 @@ trait FileStructureTrait
            'extension' => $media['extension'],
            'size' => $media['size'],
            'media_id' => $media['id'],
-           'folder_id' => $file['folder_id']
+           'folder_id' => $file['folder_id'],
+           'shelf_life' => $file['shelf_life']
        ];
    }
 }

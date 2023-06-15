@@ -24,7 +24,7 @@ class FileController extends Controller
      *     summary="Upload multiple files",
      *     tags={"File"},
      *     security={ {"sanctum": {} }},
-     *     description="Send bearer token, folder id and file (s)",
+     *     description="Send bearer token, file storage time in days, folder id and file (s)",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
@@ -33,6 +33,11 @@ class FileController extends Controller
      *                 @OA\Property(
      *                     property="folder_id",
      *                     type="string",
+     *                     nullable=true
+     *                 ),
+     *                 @OA\Property(
+     *                     property="shelf_life",
+     *                     type="integer",
      *                     nullable=true
      *                 ),
      *                 @OA\Property(
@@ -66,6 +71,7 @@ class FileController extends Controller
      *                          @OA\Property(property="size", type="integer", example=5199684),
      *                          @OA\Property(property="media_id", type="integer", example=12),
      *                          @OA\Property(property="folder_id", type="integer", example=4),
+     *                          @OA\Property(property="shelf_life", type="string", format="date-time")
      *                      )
      *                 )
      *             )
@@ -106,7 +112,8 @@ class FileController extends Controller
                     $fileModel = $fileManager->create([
                         'uuid' => (string)\Webpatser\Uuid\Uuid::generate(),
                         'folder_id' => $folderId ?: null,
-                        'created_by_id' => $request->user()->id
+                        'created_by_id' => $request->user()->id,
+                        'shelf_life' => now()->addDays((int)$request->shelf_life) ?: null
                     ]);
 
                     $media = $fileModel->addMedia($file)->toMediaCollection('file');
@@ -162,6 +169,12 @@ class FileController extends Controller
      *                     type="integer",
      *                     nullable=true,
      *                     example=4
+     *                 ),
+     *                 @OA\Property(
+     *                     property="shelf_life",
+     *                     type="integer",
+     *                     nullable=true,
+     *                     example=1
      *                 )
      *             )
      *         )
@@ -184,6 +197,7 @@ class FileController extends Controller
      *                          @OA\Property(property="size", type="integer", example=5199684),
      *                          @OA\Property(property="media_id", type="integer", example=12),
      *                          @OA\Property(property="folder_id", type="integer", example=4),
+     *                          @OA\Property(property="shelf_life", type="string", format="date-time")
      *                 ),
      *             )
      *         )
@@ -206,6 +220,7 @@ class FileController extends Controller
     {
         $fileName = str_replace(" ", "_", $request->file_name);
         $folderId = (int)$request->folder_id;
+        $shelfLife = (int)$request->shelf_life;
         $media = $file->getMedia('file')->first();
 
         if($fileName) {
@@ -216,6 +231,11 @@ class FileController extends Controller
 
         if($folderId) {
             $file->folder_id = $folderId;
+            $file->save();
+        }
+
+        if($shelfLife) {
+            $file->shelf_life = $shelfLife < 0 ? NULL : now()->addDays($shelfLife);
             $file->save();
         }
 

@@ -16,7 +16,7 @@ class File extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia;
 
-    protected $fillable = ['created_by_id', 'folder_id', 'uuid'];
+    protected $fillable = ['created_by_id', 'folder_id', 'uuid', 'shelf_life'];
 
     public function folder(): BelongsTo
     {
