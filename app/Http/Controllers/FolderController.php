@@ -9,10 +9,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Traits\FileStructureTrait;
 use App\Http\Controllers\Traits\UpdateMemoryLimitTrait;
+use App\Http\Controllers\Traits\CacheTrait;
 
 class FolderController extends Controller
 {
-    use FileStructureTrait, FolderTrait, UpdateMemoryLimitTrait;
+    use FileStructureTrait, FolderTrait, UpdateMemoryLimitTrait, CacheTrait;
 
     /**
      * User folder create
@@ -160,15 +161,13 @@ class FolderController extends Controller
                 ->get();
 
             $files = [];
-            $folderSize = null;
 
             foreach ($filesModel as $file) {
-                $mediaFile = $file->getMedia('file')->first();
-                $files[] = $this->fileFormatData($file, $mediaFile);
-
-                $folderSize += $mediaFile->size;
+                $formattedFile = $this->rememberFileCache($file);
+                $files[] = $formattedFile;
             }
 
+            $folderSize = collect($files)->sum('size');
             $folder = $this->folderFormatData($folderModel, $folderSize);
 
             return response()->json([

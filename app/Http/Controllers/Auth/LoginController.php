@@ -10,13 +10,12 @@ use App\Http\Requests\LoginRequest;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Traits\LoginTrait;
-use Illuminate\Support\Facades\Cache;
-
+use App\Http\Controllers\Traits\CacheTrait;
 
 
 class LoginController extends Controller
 {
-    use LoginTrait;
+    use LoginTrait, CacheTrait;
 
     /**
      * Auth user.
@@ -149,12 +148,7 @@ class LoginController extends Controller
 
             /** @var User $user */
 
-            $cacheKey = 'user_info_' . $token->tokenable->id;
-            $cacheDurationInMinutes = 60;
-
-            $user = Cache::remember($cacheKey, $cacheDurationInMinutes, function () use ($token) {
-                return $token->tokenable;
-            });
+            $user = $this->rememberUserCache($token);
 
             return response()->json([
                 'status' => 'success',

@@ -10,11 +10,12 @@ use App\Models\File;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\FileRequest;
 use App\Http\Resources\FileResource;
+use App\Http\Controllers\Traits\CacheTrait;
 
 
 class FileController extends Controller
 {
-    use FileUploadTrait, FileStructureTrait, UpdateMemoryLimitTrait;
+    use FileUploadTrait, FileStructureTrait, UpdateMemoryLimitTrait, CacheTrait;
 
     /**
      * Upload multiple files.
@@ -117,9 +118,12 @@ class FileController extends Controller
                     ]);
 
                     $media = $fileModel->addMedia($file)->toMediaCollection('file');
-                    $addedFiles[] = $this->fileFormatData($fileModel, $media);
+                    $formattedFile = $this->fileFormatData($fileModel, $media);
 
+                    $addedFiles[] = $formattedFile;
                     $fileSize += $media->size;
+
+                    $this->putFileCache($formattedFile, $fileModel->id);
                 }
 
                 $this->updateLimitAfterUpload($user, $fileSize);
@@ -239,10 +243,14 @@ class FileController extends Controller
             $file->save();
         }
 
+        $formattedFile = $this->fileFormatData($file, $media);
+
+        $this->putFileCache($formattedFile, $file->id);
+
         return response()->json([
             'status' => 'success',
             'data' => [
-                'file' => $this->fileFormatData($file, $media)
+                'file' => $formattedFile
             ]
         ], 200);
     }

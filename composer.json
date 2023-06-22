@@ -11,6 +11,7 @@
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
+        "predis/predis": "^2.2",
         "spatie/laravel-medialibrary": "^10.0.0",
         "webpatser/laravel-uuid": "^4.0"
     },

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Traits;
 
 use App\Models\User;
-use App\Http\Controllers\Traits\InvalidateCacheTrait;
+use App\Http\Controllers\Traits\CacheTrait;
 
 
 trait UpdateMemoryLimitTrait
 {
-    use InvalidateCacheTrait;
+    use CacheTrait;
     public function updateLimitAfterUpload(User $user, $fileSize): void
     {
         $user->upload_limit += $fileSize;
@@ -26,5 +26,6 @@ trait UpdateMemoryLimitTrait
         $user->save();
 
         $this->invalidateUserCache($user->id);
+        $this->invalidateFileCache($file->id);
     }
 }
