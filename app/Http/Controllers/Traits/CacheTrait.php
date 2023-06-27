@@ -6,6 +6,7 @@ use App\Models\File;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Traits\FileStructureTrait;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 
 trait CacheTrait
@@ -18,6 +19,7 @@ trait CacheTrait
     private $cacheUserTag;
     private $cacheUserKey;
     private $cacheUserTime;
+    private $cacheTrashTag;
 
     public function __construct()
     {
@@ -27,6 +29,7 @@ trait CacheTrait
         $this->cacheUserTag = config('constants.USER_CACHE_TAG');
         $this->cacheUserKey = config('constants.USER_CACHE_KEY');
         $this->cacheUserTime = config('constants.USER_CACHE_TIME');
+        $this->cacheTrashTag = config('constants.TRASH_CACHE_TAG');
     }
 
 
@@ -49,6 +52,19 @@ trait CacheTrait
         Cache::tags($this->cacheFileTag)->put($this->cacheFileKey . $fileId, $formattedFile, now()->addMinute($this->cacheFileTime));
     }
 
+
+    public function rememberTrashFileCache(array $file): array
+    {
+        return Cache::tags([$this->cacheFileTag, $this->cacheTrashTag])->remember($this->cacheFileKey . $file['id'], now()->addMinute($this->cacheFileTime), function () use ($file) {
+            $media = Media::where('model_id', $file['id'])->first();
+            return $this->fileFormatData($file, $media);
+        });
+    }
+
+    public function deleteAllTrashFileCache(): void
+    {
+        Cache::tags($this->cacheTrashTag)->flush();
+    }
 
     public function rememberFileCache(File $file): array
     {

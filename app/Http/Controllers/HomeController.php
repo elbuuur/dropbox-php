@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\Folder;
-use App\Http\Controllers\Traits\FileStructureTrait;
+use App\Http\Controllers\Traits\CacheTrait;
 
 class HomeController extends Controller
 {
-    use FileStructureTrait;
+    use CacheTrait;
 
     /**
      * Get structure from root
@@ -76,9 +74,10 @@ class HomeController extends Controller
         $filesModel = $user->file()->where('folder_id', null)->get();
 
         $files = [];
+
         foreach ($filesModel as $file) {
-            $mediaFile = $file->getMedia('file')->first();
-            $files[] = $this->fileFormatData($file, $mediaFile);
+            $formattedFile = $this->rememberFileCache($file);
+            $files[] = $formattedFile;
         }
 
         return response()->json([

@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\TrashController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,4 +42,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('download/{mediaUuid}', [DownloadController::class, 'downloadFile']);
 
     Route::post('home', [HomeController::class, 'getStructureFromRoot']);
+
+    Route::controller(TrashController::class)->group(function () {
+        Route::post('/trash', 'index');
+
+        Route::delete('/trash/delete', 'deleteItems');
+        Route::delete('/trash/delete-all', 'deleteAll');
+
+        Route::post('/trash/restore', 'restoreItems');
+        Route::post('/trash/restore-all', 'restoreAll');
+    });
 });

@@ -18,4 +18,11 @@ return [
     'USER_CACHE_TAG' => 'users',
     'FILE_CACHE_KEY' => 'file_',
     'FILE_CACHE_TAG' => 'files',
+    'TRASH_CACHE_TAG' => 'trash_files',
+
+    /**
+     * trash lifetime in days
+     */
+
+    'TRASH_LIFESPAN' => env('TRASH_LIFESPAN', 10)
 ];
