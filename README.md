@@ -9,6 +9,9 @@
     - Если переменная `L5_SWAGGER_GENERATE_ALWAYS` в файле `.env` установлена в `true`, документация будет генерироваться автоматически.
     - Необходимо определить переменную `SWAGGER_API_BASEURL` в файле `.env` со значением `http://localhost/api`.
     - Ссылка на документацию: [http://localhost/api/documentation#/](http://localhost/api/documentation#/).
+    - Postman: 
+      - скачать по ссылке: [http://localhost/resources/docs/postman/download](http://localhost/docs/postman/download)
+      - открыть по ссылке: [http://localhost/resources/docs/postman/view](http://localhost/docs/postman/view)
 
 
 3. **Максимальный лимит объема всех файлов на диске одного пользователя**:
@@ -35,4 +38,4 @@
     - Реализовано мягкое удаление моделей (SoftDeletes).
     - Реализована корзина с возможностью восстановления моделей.
     - Содержимое корзины хранится 10 дней (значение можно установить в `.env` файле с помощью переменной `TRASH_LIFESPAN`), затем полностью очищается.
-    - При восстановлении файлов полю `shelf_life` устанавливается значение `NULL`
+    - При восстановлении файлов полю `shelf_life` 

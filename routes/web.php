@@ -13,8 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/docs/postman/download', function () {
+    $path = resource_path('docs/postman/Dropbox.postman_collection.json');
+
+    return response()->download($path);
+});
+
+Route::get('/docs/postman/view', function () {
+    $path = resource_path('docs/postman/Dropbox.postman_collection.json');
+
+    return response()->file($path);
 });
 
 
