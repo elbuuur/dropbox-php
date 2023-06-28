@@ -50,6 +50,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/trash/delete-all', 'deleteAll');
 
         Route::post('/trash/restore', 'restoreItems');
-        Route::post('/trash/restore-all', 'restoreAll');
     });
 });

@@ -9,8 +9,9 @@ use App\Http\Controllers\Traits\CacheTrait;
 trait UpdateMemoryLimitTrait
 {
     use CacheTrait;
-    public function updateLimitAfterUpload(User $user, $fileSize): void
+    public function updateLimitAfterUpload($fileSize): void
     {
+        $user = auth()->user();
         $user->upload_limit += $fileSize;
         $user->save();
 
@@ -20,12 +21,22 @@ trait UpdateMemoryLimitTrait
     public function updateLimitAfterDelete($file): void
     {
         $user = auth()->user();
-        $mediaFile = $file->getMedia('file')->first();
 
-        $user->upload_limit -= $mediaFile->size;
+        if($cacheFile = $this->getFileCache($file->id)) {
+            $user->upload_limit -= $cacheFile['size'];
+            $this->invalidateFileCache($file->id);
+        } else {
+            $mediaFile = $file->getMedia('file')->first();
+            $user->upload_limit -= $mediaFile->size;
+        }
+
         $user->save();
 
         $this->invalidateUserCache($user->id);
-        $this->invalidateFileCache($file->id);
+    }
+
+    public function checkUploadLimit(): int|NULL
+    {
+        return config('constants.UPLOAD_LIMIT') - auth()->user()->upload_limit;
     }
 }

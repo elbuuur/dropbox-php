@@ -61,10 +61,26 @@ trait CacheTrait
         });
     }
 
+
     public function deleteAllTrashFileCache(): void
     {
         Cache::tags($this->cacheTrashTag)->flush();
     }
+
+    /**
+     * Removing the trash tag when restoring a file
+     * @param $fileId
+     * @return void
+     */
+    public function restoreTrashFileCache($fileId): void
+    {
+        if (Cache::tags($this->cacheFileTag)->get($this->cacheFileKey . $fileId)) {
+            $currentTags = Cache::getTagsForKey($this->cacheFileKey . $fileId);
+            $newTags = array_diff($currentTags, [$this->cacheTrashTag]);
+            Cache::tags($currentTags)->replaceTags($newTags);
+        }
+    }
+
 
     public function rememberFileCache(File $file): array
     {
@@ -79,4 +95,11 @@ trait CacheTrait
     {
         Cache::tags($this->cacheFileTag)->forget($this->cacheFileKey . $fileId);
     }
+
+
+    public function getFileCache($fileId): array|NULL
+    {
+        return Cache::tags($this->cacheFileTag)->get($this->cacheFileKey . $fileId);
+    }
+
 }

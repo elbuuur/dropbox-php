@@ -4,8 +4,6 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Carbon\Carbon;
-use App\Models\File;
 
 class Kernel extends ConsoleKernel
 {
@@ -14,15 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        /**
-         * deleting expired files
-         */
-        $schedule->call(function () {
-            $currentDate = Carbon::now();
-
-            File::where('shelf_life', '<', $currentDate)
-                ->forceDelete();
-        })->everyMinute();
+        $schedule->command('deleteExpiredFiles')->hourly();
+        $schedule->command('deleteExpiredTrashFiles')->cron('0 0 */' . config('constants.TRASH_LIFESPAN') . ' * *');
     }
 
     /**

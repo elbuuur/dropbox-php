@@ -96,7 +96,6 @@ class FileController extends Controller
         try {
             if ($request->hasFile('file')) {
                 $fileManager = new File();
-                $user = auth()->user();
                 $folderId = (int)$request->folder_id;
 
                 if($folderId && !$this->isFolderExist($folderId)) {
@@ -126,7 +125,7 @@ class FileController extends Controller
                     $this->putFileCache($formattedFile, $fileModel->id);
                 }
 
-                $this->updateLimitAfterUpload($user, $fileSize);
+                $this->updateLimitAfterUpload($fileSize);
 
                 return response()->json([
                     'status' => 'success',

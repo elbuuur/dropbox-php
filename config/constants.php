@@ -24,5 +24,12 @@ return [
      * trash lifetime in days
      */
 
-    'TRASH_LIFESPAN' => env('TRASH_LIFESPAN', 10)
+    'TRASH_LIFESPAN' => env('TRASH_LIFESPAN', 10),
+
+
+    /**
+     * Upload limit for user in byte
+     */
+
+    'UPLOAD_LIMIT' => 1024 * 1024 * env('UPLOAD_LIMIT', 100),
 ];

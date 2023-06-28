@@ -20,10 +20,15 @@ class TrashController extends Controller
     use UpdateMemoryLimitTrait, FileStructureTrait, CacheTrait;
 
     private $trashLifespan;
+    private $fileModel;
+    private $folderModel;
+
 
     public function __construct()
     {
         $this->trashLifespan = config('constants.TRASH_LIFESPAN');
+        $this->fileModel = new File();
+        $this->folderModel = new Folder();
     }
 
     /**
@@ -149,14 +154,10 @@ class TrashController extends Controller
                 throw new \Exception('No data');
             }
 
-            $folderModel = new Folder();
-            $fileModel = new File();
-
-
             foreach ($request->all() as $type => $itemId){
                 switch ($type) {
                     case 'folder':
-                        $folder = $folderModel->withTrashed()->find($itemId);
+                        $folder = $this->folderModel->withTrashed()->find($itemId);
                         $files = $folder->files()->onlyTrashed()->get();
 
                         if($files) {
@@ -169,7 +170,7 @@ class TrashController extends Controller
 
                         break;
                     case 'file':
-                        $file = $fileModel->withTrashed()->find($itemId);
+                        $file = $this->fileModel->withTrashed()->find($itemId);
 
                         $this->invalidateFileCache($itemId);
                         $file->forceDelete();
@@ -231,11 +232,13 @@ class TrashController extends Controller
             $folderIds = $user->folder()->onlyTrashed()->pluck('id')->toArray();
             $fileIds = $user->file()->onlyTrashed()->pluck('id')->toArray();
 
-            Folder::onlyTrashed()
+            $this->folderModel
+                ->onlyTrashed()
                 ->whereIn('id', $folderIds)
                 ->forceDelete();
 
-            File::onlyTrashed()
+            $this->fileModel
+                ->onlyTrashed()
                 ->whereIn('id', $fileIds)
                 ->forceDelete();
 
@@ -254,14 +257,109 @@ class TrashController extends Controller
     }
 
 
-    public function restoreItems()
+    /**
+     * Restore item(s)
+     *
+     * @OA\Post(
+     *     path="/api/trash/restore",
+     *     summary="Restore item (s)",
+     *     tags={"Trash"},
+     *     security={ {"sanctum": {} }},
+     *     description="Send bearer token, and element ids. key-value bindings can be repeated",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="folder", type="string", example="3"),
+     *             @OA\Property(property="file", type="string", example="20"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Restore cart items",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="All items restored"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Something went wrong..."),
+     *         )
+     *     ),
+     * )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function restoreItems(Request $request)
     {
+        try {
+            if(!$request->all()) {
+                throw new \Exception('No data');
+            }
 
-    }
+            $uploadLimit = $this->checkUploadLimit();
 
+            foreach ($request->all() as $type => $itemId){
+                switch ($type) {
+                    case 'folder':
+                        $folder = $this->folderModel->withTrashed()->find($itemId);
+                        $folderFilesId = $folder->files()->withTrashed()->pluck('id')->toArray();
 
-    public function restoreAll()
-    {
+                        $folderSize = 0;
 
+                        foreach ($folderFilesId as $fileId) {
+                            $folderSize += Media::where('model_id', $fileId)->first()['size'];
+                        }
+
+                        if ($uploadLimit > $folderSize) {
+
+                            foreach ($folderFilesId as $fileId) {
+                                $this->restoreTrashFileCache($fileId);
+                            }
+
+                            $this->fileModel->withTrashed()->whereIn('id', $folderFilesId)->update(['shelf_life' => NULL]);
+                            $this->fileModel->withTrashed()->whereIn('id', $folderFilesId)->restore();
+
+                            $this->updateLimitAfterUpload($folderSize);
+
+                            $folder->restore();
+                        } else {
+                            throw new \Exception('Not enough free disk space');
+                        }
+
+                        break;
+                    case 'file':
+                        $fileSize = Media::where('model_id', $itemId)->first()['size'];
+
+                        if ($uploadLimit > $fileSize) {
+                            $this->fileModel->withTrashed()->find($itemId)->restore();
+                            $this->fileModel->withTrashed()->whereIn('id', $itemId)->update(['shelf_life' => NULL]);
+
+                            $this->restoreTrashFileCache($itemId);
+                        } else {
+                            throw new \Exception('Not enough free disk space');
+                        }
+
+                        break;
+                    default:
+                        throw new \Exception('Something went wrong...');
+                }
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'All items restored'
+            ]);
+
+        } catch (Exception $exception) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ], 404);
+        }
     }
 }
