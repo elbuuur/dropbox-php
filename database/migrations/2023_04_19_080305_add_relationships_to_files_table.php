@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('files', function (Blueprint $table) {
             if (!Schema::hasColumn('files', 'folder_id')) {
-                $table->unsignedBigInteger('folder_id')->nullable();
+                $table->unsignedInteger('folder_id')->nullable();
                 $table->foreign('folder_id')->references('id')->on('folders');
             }
             if (!Schema::hasColumn('files', 'created_by_id')) {
