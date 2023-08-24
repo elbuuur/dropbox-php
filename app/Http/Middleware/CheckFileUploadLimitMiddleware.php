@@ -28,7 +28,13 @@ class CheckFileUploadLimitMiddleware
                 }
 
                 if ($fileSize > $limit - $user->upload_limit) {
-                    return response()->json(['status' => 'error', 'message' => 'File upload limit exceeded'], 422);
+
+                    return response()->json([
+                        'status' => 'error',
+                        'data' => [
+                            'validate' => ['File upload limit exceeded']
+                        ]
+                    ], 422);
                 }
             }
         }

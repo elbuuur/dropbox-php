@@ -94,7 +94,19 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Invalid credentials"
+                                            "example": "Validation errors"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "validate": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Invalid credentials"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"

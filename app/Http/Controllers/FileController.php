@@ -103,11 +103,20 @@ class FileController extends Controller
                 }
 
                 $addedFiles = [];
-                $fileSize = null;
+                $filesSize = null;
+                $maxFileSize= config('media-library.max_file_size');
                 foreach ($request->file as $file) {
                     if ($this->phpDetect($file)) {
                         throw new \Exception('PHP files are not allowed to be uploaded');
                     };
+
+                    $fileSize = $file->getSize();
+
+                    if($fileSize > $maxFileSize) {
+                        throw new \Exception('File upload limit exceeded');
+                    }
+
+                    $filesSize += $file->getSize();
 
                     $fileModel = $fileManager->create([
                         'uuid' => (string)\Webpatser\Uuid\Uuid::generate(),
@@ -120,12 +129,12 @@ class FileController extends Controller
                     $formattedFile = $this->fileFormatData($fileModel, $media);
 
                     $addedFiles[] = $formattedFile;
-                    $fileSize += $media->size;
+                    $filesSize += $media->size;
 
                     $this->putFileCache($formattedFile, $fileModel->id);
                 }
 
-                $this->updateLimitAfterUpload($fileSize);
+                $this->updateLimitAfterUpload($filesSize);
 
                 return response()->json([
                     'status' => 'success',
@@ -137,7 +146,12 @@ class FileController extends Controller
                 throw new \Exception('File not found');
             }
         }catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+            return response()->json([
+                'status' => 'error',
+                'data' => [
+                    'validate' => $e->getMessage()
+                ]
+            ], 422);
         }
     }
 

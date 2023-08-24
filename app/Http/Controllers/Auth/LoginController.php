@@ -54,9 +54,21 @@ class LoginController extends Controller
      *     @OA\Response(
      *         response="401",
      *         description="Invalid credentials",
-     *         @OA\JsonContent(
+     *          @OA\JsonContent(
      *             @OA\Property(property="status", type="string", example="error"),
-     *             @OA\Property(property="message", type="string", example="Invalid credentials")
+     *             @OA\Property(property="message", type="string", example="Validation errors"),
+     *             @OA\Property(
+     *                  property="data",
+     *                  type="object",
+     *                  @OA\Property(
+     *                      property="validate",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          type="string",
+     *                          example="Invalid credentials"
+     *                      )
+     *                  )
+     *              )
      *         )
      *     )
      * )
@@ -69,7 +81,10 @@ class LoginController extends Controller
         if(!auth()->attempt($request->toArray())) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid credentials'
+                'message'   => 'Validation errors',
+                'data' => [
+                    'validate' => ["Invalid credentials"]
+                ]
             ],401);
         }
 
@@ -137,6 +152,7 @@ class LoginController extends Controller
     protected function info(Request $request):JsonResponse
     {
         try {
+//            dd($request->header());
             $token = PersonalAccessToken::findToken(explode('|', $request->header('Authorization'))[1]);
 
             if (empty($token)) {

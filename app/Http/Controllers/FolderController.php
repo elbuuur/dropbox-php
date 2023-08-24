@@ -293,19 +293,27 @@ class FolderController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        $folder = Folder::findOrFail($id);
+        try {
+            $folder = Folder::findOrFail($id);
 
-        $filesModel = $folder->files()->get();
-        foreach ($filesModel as $file) {
-            $file->delete();
-            $this->updateLimitAfterDelete($file);
+            $filesModel = $folder->files()->get();
+            foreach ($filesModel as $file) {
+                $file->delete();
+                $this->updateLimitAfterDelete($file);
+            }
+
+            $folder->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => compact('folder'),
+            ]);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Folder not found or deleted'
+            ], 404);
         }
 
-        $folder->delete();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => compact('folder'),
-        ]);
     }
 }
