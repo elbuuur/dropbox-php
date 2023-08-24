@@ -104,7 +104,7 @@ class FileController extends Controller
 
                 $addedFiles = [];
                 $filesSize = null;
-                $maxFileSize= config('media-library.max_file_size');
+                $maxFileSize = config('media-library.max_file_size');
                 foreach ($request->file as $file) {
                     if ($this->phpDetect($file)) {
                         throw new \Exception('PHP files are not allowed to be uploaded');

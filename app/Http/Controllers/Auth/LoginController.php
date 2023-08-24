@@ -132,6 +132,12 @@ class LoginController extends Controller
      *                      @OA\Property(property="upload_limit", type="integer", example=66464468),
      *                      @OA\Property(property="created_at", type="string", format="date-time"),
      *                      @OA\Property(property="updated_at", type="string", format="date-time"),
+     *                 ),
+     *                 @OA\Property(
+     *                      property="storage",
+     *                      type="object",
+     *                      @OA\Property(property="max_file_size", type="integer", example=20971520),
+     *                      @OA\Property(property="upload_limit", type="integer", example=104857600),
      *                 )
      *             )
      *         )
@@ -152,7 +158,6 @@ class LoginController extends Controller
     protected function info(Request $request):JsonResponse
     {
         try {
-//            dd($request->header());
             $token = PersonalAccessToken::findToken(explode('|', $request->header('Authorization'))[1]);
 
             if (empty($token)) {
@@ -166,9 +171,14 @@ class LoginController extends Controller
 
             $user = $this->rememberUserCache($token);
 
+            $storage = [
+                "max_file_size" => config('media-library.max_file_size'),
+                "upload_limit" => config('constants.UPLOAD_LIMIT')
+            ];
+
             return response()->json([
                 'status' => 'success',
-                'data' => compact('user'),
+                'data' => compact('user', 'storage'),
             ]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 401);
