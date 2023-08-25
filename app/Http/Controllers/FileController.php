@@ -67,6 +67,7 @@ class FileController extends Controller
      *                          type="object",
      *                          @OA\Property(property="file_name", type="string", example="IMG_0514.jpg"),
      *                          @OA\Property(property="id", type="integer", example=36),
+     *                          @OA\Property(property="thumb", type="string", example="http://localhost/storage/47/conversions/1-(1)-thumb.jpg")
      *                          @OA\Property(property="uuid", type="string", example="b28b6620-f3ed-11ed-8030-bb9a329c1263"),
      *                          @OA\Property(property="extension", type="string", example="JPG"),
      *                          @OA\Property(property="size", type="integer", example=5199684),
@@ -105,31 +106,34 @@ class FileController extends Controller
                 $addedFiles = [];
                 $filesSize = null;
                 $maxFileSize = config('media-library.max_file_size');
-                foreach ($request->file as $file) {
-                    if ($this->phpDetect($file)) {
-                        throw new \Exception('PHP files are not allowed to be uploaded');
-                    };
 
+                foreach ($request->file as $file) {
                     $fileSize = $file->getSize();
 
                     if($fileSize > $maxFileSize) {
                         throw new \Exception('File upload limit exceeded');
                     }
 
-                    $filesSize += $file->getSize();
+                    if ($this->phpDetect($file)) {
+                        throw new \Exception('PHP files are not allowed to be uploaded');
+                    }
 
                     $fileModel = $fileManager->create([
                         'uuid' => (string)\Webpatser\Uuid\Uuid::generate(),
                         'folder_id' => $folderId ?: null,
                         'created_by_id' => $request->user()->id,
-                        'shelf_life' => now()->addDays((int)$request->shelf_life) ?: null
+                        'shelf_life' => now()->addDays((int)$request->shelf_life) ? $request->shelf_life : null
                     ]);
 
-                    $media = $fileModel->addMedia($file)->toMediaCollection('file');
+                    $media = $fileModel
+                        ->addMedia($file)
+                        ->withResponsiveImages()
+                        ->toMediaCollection('file');
+
                     $formattedFile = $this->fileFormatData($fileModel, $media);
 
                     $addedFiles[] = $formattedFile;
-                    $filesSize += $media->size;
+                    $filesSize += $fileSize;
 
                     $this->putFileCache($formattedFile, $fileModel->id);
                 }
@@ -211,6 +215,7 @@ class FileController extends Controller
      *                          @OA\Property(property="uuid", type="string", example="b28b6620-f3ed-11ed-8030-bb9a329c1263"),
      *                          @OA\Property(property="id", type="integer", example=36),
      *                          @OA\Property(property="extension", type="string", example="JPG"),
+     *                          @OA\Property(property="thumb", type="string", example="http://localhost/storage/47/conversions/1-(1)-thumb.jpg"),
      *                          @OA\Property(property="size", type="integer", example=5199684),
      *                          @OA\Property(property="media_id", type="integer", example=12),
      *                          @OA\Property(property="folder_id", type="integer", example=4),
