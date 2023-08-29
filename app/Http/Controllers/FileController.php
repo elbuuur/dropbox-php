@@ -122,7 +122,7 @@ class FileController extends Controller
                         'uuid' => (string)\Webpatser\Uuid\Uuid::generate(),
                         'folder_id' => $folderId ?: null,
                         'created_by_id' => $request->user()->id,
-                        'shelf_life' => now()->addDays((int)$request->shelf_life) ? $request->shelf_life : null
+                        'shelf_life' => $request->shelf_life ? now()->addDays((int)$request->shelf_life) : null
                     ]);
 
                     $media = $fileModel
