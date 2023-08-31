@@ -9,6 +9,7 @@ trait FileStructureTrait
        $extensionFile = $media['extension'];
        $formattedData = [
            'file_name' => $media['file_name'],
+           'name' => $media['name'],
            'uuid' => $media['uuid'],
            'id' => $media['model_id'],
            'extension' => $extensionFile,

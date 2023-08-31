@@ -128,6 +128,7 @@ class FolderController extends Controller
      *                          type="object",
      *                          @OA\Property(property="name", type="string", example="IMG_0514"),
      *                          @OA\Property(property="file_name", type="string", example="IMG_0514.jpg"),
+     *                          @OA\Property(property="name", type="string", example="IMG_0514"),
      *                          @OA\Property(property="uuid", type="string", example="5a3e86e4-c09d-4594-8bf4-be8776e8769f"),
      *                          @OA\Property(property="preview_url", type="string", example=""),
      *                          @OA\Property(property="thumb", type="string", example="http://localhost/storage/47/conversions/1-(1)-thumb.jpg")
