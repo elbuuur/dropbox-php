@@ -166,6 +166,19 @@
                                                         }
                                                     },
                                                     "type": "object"
+                                                },
+                                                "storage": {
+                                                    "properties": {
+                                                        "max_file_size": {
+                                                            "type": "integer",
+                                                            "example": 20971520
+                                                        },
+                                                        "upload_limit": {
+                                                            "type": "integer",
+                                                            "example": 104857600
+                                                        }
+                                                    },
+                                                    "type": "object"
                                                 }
                                             },
                                             "type": "object"
@@ -405,9 +418,17 @@
                                                                 "type": "string",
                                                                 "example": "IMG_0514.jpg"
                                                             },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514"
+                                                            },
                                                             "id": {
                                                                 "type": "integer",
                                                                 "example": 36
+                                                            },
+                                                            "thumb": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
                                                             },
                                                             "uuid": {
                                                                 "type": "string",
@@ -536,6 +557,10 @@
                                                             "type": "string",
                                                             "example": "IMG_0514.jpg"
                                                         },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "IMG_0514"
+                                                        },
                                                         "uuid": {
                                                             "type": "string",
                                                             "example": "b28b6620-f3ed-11ed-8030-bb9a329c1263"
@@ -547,6 +572,10 @@
                                                         "extension": {
                                                             "type": "string",
                                                             "example": "JPG"
+                                                        },
+                                                        "thumb": {
+                                                            "type": "string",
+                                                            "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
                                                         },
                                                         "size": {
                                                             "type": "integer",
@@ -941,9 +970,9 @@
                                                                 "type": "string",
                                                                 "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
                                                             },
-                                                            "preview_url": {
+                                                            "thumb": {
                                                                 "type": "string",
-                                                                "example": ""
+                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
                                                             },
                                                             "original_url": {
                                                                 "type": "string",
@@ -1134,6 +1163,10 @@
                                                                 "type": "string",
                                                                 "example": "IMG_0514.jpg"
                                                             },
+                                                            "thumb": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
+                                                            },
                                                             "uuid": {
                                                                 "type": "string",
                                                                 "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
@@ -1253,17 +1286,21 @@
                                                     "type": "array",
                                                     "items": {
                                                         "properties": {
-                                                            "name": {
-                                                                "type": "string",
-                                                                "example": "IMG_0514"
-                                                            },
                                                             "file_name": {
                                                                 "type": "string",
                                                                 "example": "IMG_0514.jpg"
                                                             },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514"
+                                                            },
                                                             "uuid": {
                                                                 "type": "string",
                                                                 "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
+                                                            },
+                                                            "thumb": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
                                                             },
                                                             "preview_url": {
                                                                 "type": "string",

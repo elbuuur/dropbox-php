@@ -68,7 +68,7 @@ class FileController extends Controller
      *                          @OA\Property(property="file_name", type="string", example="IMG_0514.jpg"),
      *                          @OA\Property(property="name", type="string", example="IMG_0514"),
      *                          @OA\Property(property="id", type="integer", example=36),
-     *                          @OA\Property(property="thumb", type="string", example="http://localhost/storage/47/conversions/1-(1)-thumb.jpg")
+     *                          @OA\Property(property="thumb", type="string", example="http://localhost/storage/47/conversions/1-(1)-thumb.jpg"),
      *                          @OA\Property(property="uuid", type="string", example="b28b6620-f3ed-11ed-8030-bb9a329c1263"),
      *                          @OA\Property(property="extension", type="string", example="JPG"),
      *                          @OA\Property(property="size", type="integer", example=5199684),
