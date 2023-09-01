@@ -501,7 +501,7 @@
                     "File"
                 ],
                 "summary": "Update file",
-                "description": "Send bearer token, file id and file info",
+                "description": "Send bearer token, file id and file name without extension",
                 "operationId": "dad73b25235ba92cd6575cb4abde0ad4",
                 "parameters": [
                     {
@@ -518,9 +518,9 @@
                         "application/x-www-form-urlencoded": {
                             "schema": {
                                 "properties": {
-                                    "file_name": {
+                                    "name": {
                                         "type": "string",
-                                        "example": "summer.png"
+                                        "example": "summer"
                                     },
                                     "folder_id": {
                                         "type": "integer",

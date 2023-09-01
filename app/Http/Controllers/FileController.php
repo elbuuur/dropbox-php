@@ -168,7 +168,7 @@ class FileController extends Controller
      *     summary="Update file",
      *     tags={"File"},
      *     security={ {"sanctum": {} }},
-     *     description="Send bearer token, file id and file info",
+     *     description="Send bearer token, file id and file name without extension",
      *     @OA\Parameter(
      *         description="File id",
      *         in="path",
@@ -182,9 +182,9 @@ class FileController extends Controller
      *             mediaType="application/x-www-form-urlencoded",
      *             @OA\Schema(
      *                 @OA\Property(
-     *                     property="file_name",
+     *                     property="name",
      *                     type="string",
-     *                     example="summer.png"
+     *                     example="summer"
      *                 ),
      *                 @OA\Property(
      *                     property="folder_id",
@@ -242,14 +242,15 @@ class FileController extends Controller
      */
     public function update(FileRequest $request, File $file): JsonResponse
     {
-        $fileName = str_replace(" ", "_", $request->file_name);
+        // $request->name - file name without extension
+        $name = str_replace(" ", "_", $request->name);
         $folderId = (int)$request->folder_id;
         $shelfLife = (int)$request->shelf_life;
         $media = $file->getMedia('file')->first();
 
-        if($fileName) {
-            $media->file_name = $fileName;
-            $media->name = $fileName;
+        if($name) {
+            $media->file_name = $name . '.' . $media->extension;
+            $media->name = $name;
             $media->save();
         }
 
