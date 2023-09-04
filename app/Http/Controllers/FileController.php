@@ -74,7 +74,7 @@ class FileController extends Controller
      *                          @OA\Property(property="size", type="integer", example=5199684),
      *                          @OA\Property(property="media_id", type="integer", example=12),
      *                          @OA\Property(property="folder_id", type="integer", example=4),
-     *                          @OA\Property(property="shelf_life", type="string", format="Y-m-d")
+     *                          @OA\Property(property="shelf_life", type="string", format="date")
      *                      )
      *                 )
      *             )
@@ -224,7 +224,7 @@ class FileController extends Controller
      *                          @OA\Property(property="size", type="integer", example=5199684),
      *                          @OA\Property(property="media_id", type="integer", example=12),
      *                          @OA\Property(property="folder_id", type="integer", example=4),
-     *                          @OA\Property(property="shelf_life", type="string", format="Y-m-d")
+     *                          @OA\Property(property="shelf_life", type="string", format="date")
      *                 ),
      *             )
      *         )
