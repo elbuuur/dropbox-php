@@ -50,6 +50,7 @@ class HomeController extends Controller
      *                          @OA\Property(property="extension", type="string", example="JPG"),
      *                          @OA\Property(property="size", type="integer", example=5199684),
      *                          @OA\Property(property="folder_id", type="integer", example=null),
+     *                          @OA\Property(property="shelf_life", type="string", format="Y-m-d")
      *                      ),
      *                 ),
      *             )

@@ -74,7 +74,7 @@ class FileController extends Controller
      *                          @OA\Property(property="size", type="integer", example=5199684),
      *                          @OA\Property(property="media_id", type="integer", example=12),
      *                          @OA\Property(property="folder_id", type="integer", example=4),
-     *                          @OA\Property(property="shelf_life", type="string", format="date-time")
+     *                          @OA\Property(property="shelf_life", type="string", format="Y-m-d")
      *                      )
      *                 )
      *             )
@@ -123,7 +123,10 @@ class FileController extends Controller
                         'uuid' => (string)\Webpatser\Uuid\Uuid::generate(),
                         'folder_id' => $folderId ?: null,
                         'created_by_id' => $request->user()->id,
-                        'shelf_life' => $request->shelf_life ? now()->addDays((int)$request->shelf_life) : null
+                        'shelf_life' =>
+                            $request->shelf_life
+                            ? now()->addDays((int)$request->shelf_life)->toDateString()
+                            : null
                     ]);
 
                     $media = $fileModel
@@ -221,7 +224,7 @@ class FileController extends Controller
      *                          @OA\Property(property="size", type="integer", example=5199684),
      *                          @OA\Property(property="media_id", type="integer", example=12),
      *                          @OA\Property(property="folder_id", type="integer", example=4),
-     *                          @OA\Property(property="shelf_life", type="string", format="date-time")
+     *                          @OA\Property(property="shelf_life", type="string", format="Y-m-d")
      *                 ),
      *             )
      *         )
@@ -260,7 +263,7 @@ class FileController extends Controller
         }
 
         if($shelfLife) {
-            $file->shelf_life = $shelfLife < 0 ? NULL : now()->addDays($shelfLife);
+            $file->shelf_life = $shelfLife < 0 ? NULL : now()->addDays($shelfLife)->toDateString();
             $file->save();
         }
 

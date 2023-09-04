@@ -133,7 +133,8 @@ class FolderController extends Controller
      *                          @OA\Property(property="original_url", type="string", example="http://localhost/storage/10/IMG_0514.JPG"),
      *                          @OA\Property(property="extension", type="string", example="JPG"),
      *                          @OA\Property(property="size", type="integer", example=5199684),
-     *                          @OA\Property(property="folder_id", type="integer", example=4)
+     *                          @OA\Property(property="folder_id", type="integer", example=4),
+     *                          @OA\Property(property="shelf_life", type="string", format="Y-m-d")
      *                      ),
      *                 ),
      *             )
