@@ -12,8 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('deleteExpiredFiles')->hourly();
-        $schedule->command('deleteExpiredTrashFiles')->cron('0 0 */' . config('constants.TRASH_LIFESPAN') . ' * *');
+        $schedule->command('DeleteExpiredFiles')->hourly();
+        $schedule->command('DeleteExpiredTrashFiles')->daily();
     }
 
     /**

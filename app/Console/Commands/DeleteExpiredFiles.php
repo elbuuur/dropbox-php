@@ -30,7 +30,7 @@ class DeleteExpiredFiles extends Command
         $currentDate = Carbon::now();
 
         File::where('shelf_life', '<', $currentDate)
-            ->forceDelete();
+            ->delete();
 
         $this->info('Files with expired shelf life have been deleted.');
     }

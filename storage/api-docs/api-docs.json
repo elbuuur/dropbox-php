@@ -452,7 +452,7 @@
                                                             },
                                                             "shelf_life": {
                                                                 "type": "string",
-                                                                "format": "Y-m-d"
+                                                                "format": "date"
                                                             }
                                                         },
                                                         "type": "object"
@@ -992,7 +992,7 @@
                                                             },
                                                             "shelf_life": {
                                                                 "type": "string",
-                                                                "format": "Y-m-d"
+                                                                "format": "date"
                                                             }
                                                         },
                                                         "type": "object"
@@ -1194,6 +1194,10 @@
                                                             "folder_id": {
                                                                 "type": "integer",
                                                                 "example": null
+                                                            },
+                                                            "shelf_life": {
+                                                                "type": "string",
+                                                                "format": "date"
                                                             }
                                                         },
                                                         "type": "object"
