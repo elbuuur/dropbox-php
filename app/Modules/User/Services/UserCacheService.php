@@ -25,8 +25,8 @@ class UserCacheService
         });
     }
 
-    public function invalidateUserCache($userId): void
+    public function invalidateUserCache(int $userId): void
     {
-        Cache::tags($this->cacheUserTag)->forget($this->cacheUserKey);
+        Cache::tags($this->cacheUserTag)->forget($this->cacheUserKey . $userId);
     }
 }

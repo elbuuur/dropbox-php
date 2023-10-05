@@ -7,4 +7,6 @@ interface UserRepositoryInterface
 {
     public function register(array $data);
     public function deleteUserTokens(User $user);
+    public function decreaseUserUploadLimit(User $user, int $fileSize);
+    public function increaseUserUploadLimit(User $user, int $fileSize);
 }

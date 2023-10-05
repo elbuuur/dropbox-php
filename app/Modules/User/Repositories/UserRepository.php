@@ -3,7 +3,6 @@
 namespace App\Modules\User\Repositories;
 
 use App\Modules\User\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class UserRepository implements UserRepositoryInterface
@@ -26,5 +25,17 @@ class UserRepository implements UserRepositoryInterface
     public function deleteUserTokens(User $user)
     {
         $user->tokens()->delete();
+    }
+
+    public function decreaseUserUploadLimit(User $user, int $fileSize): void
+    {
+        $user->upload_limit -= $fileSize;
+        $user->save();
+    }
+
+    public function increaseUserUploadLimit(User $user, int $fileSize): void
+    {
+        $user->upload_limit += $fileSize;
+        $user->save();
     }
 }

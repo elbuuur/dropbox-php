@@ -7,6 +7,7 @@ use App\Http\Controllers\Traits\FileUploadTrait;
 use App\Http\Controllers\Traits\FileStructureTrait;
 use App\Http\Requests\UploadFileRequest;
 use App\Models\File;
+use App\Modules\User\Services\UserMemoryLimitService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\FileRequest;
 use App\Http\Resources\FileResource;
@@ -16,6 +17,15 @@ use App\Http\Controllers\Traits\CacheTrait;
 class FileController extends Controller
 {
     use FileUploadTrait, FileStructureTrait, UpdateMemoryLimitTrait, CacheTrait;
+
+    private UserMemoryLimitService $userMemoryLimitService;
+
+    public function __construct(UserMemoryLimitService $userMemoryLimitService)
+    {
+        parent::__construct();
+
+        $this->userMemoryLimitService = $userMemoryLimitService;
+    }
 
     /**
      * Upload multiple files.
@@ -142,7 +152,7 @@ class FileController extends Controller
                     $this->putFileCache($formattedFile, $fileModel->id);
                 }
 
-                $this->updateLimitAfterUpload($filesSize);
+                $this->userMemoryLimitService->updateLimitAfterUpload($filesSize);
 
                 return response()->json([
                     'status' => 'success',
@@ -324,7 +334,7 @@ class FileController extends Controller
     {
         $file->delete();
 
-        $this->updateLimitAfterDelete($file);
+        $this->userMemoryLimitService->updateLimitAfterDelete($file);
 
         return response()->json([
             'status' => 'success',

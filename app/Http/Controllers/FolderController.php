@@ -8,12 +8,21 @@ use App\Http\Requests\FolderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Traits\FileStructureTrait;
-use App\Http\Controllers\Traits\UpdateMemoryLimitTrait;
 use App\Http\Controllers\Traits\CacheTrait;
+use App\Modules\User\Services\UserMemoryLimitService;
 
 class FolderController extends Controller
 {
-    use FileStructureTrait, FolderTrait, UpdateMemoryLimitTrait, CacheTrait;
+    use FileStructureTrait, FolderTrait, CacheTrait;
+
+    private UserMemoryLimitService $userMemoryLimitService;
+
+    public function __construct(UserMemoryLimitService $userMemoryLimitService)
+    {
+        parent::__construct();
+
+        $this->userMemoryLimitService = $userMemoryLimitService;
+    }
 
     /**
      * User folder create
@@ -300,7 +309,7 @@ class FolderController extends Controller
             $filesModel = $folder->files()->get();
             foreach ($filesModel as $file) {
                 $file->delete();
-                $this->updateLimitAfterDelete($file);
+                $this->userMemoryLimitService->updateLimitAfterDelete($file);
             }
 
             $folder->delete();
