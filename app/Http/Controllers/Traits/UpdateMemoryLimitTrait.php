@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Traits;
 
-use App\Models\User;
+use App\Modules\User\Models\User;
 use App\Http\Controllers\Traits\CacheTrait;
 
 

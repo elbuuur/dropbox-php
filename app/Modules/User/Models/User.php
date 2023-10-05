@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Modules\User\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
