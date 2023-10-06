@@ -2,13 +2,13 @@
 
 namespace App\Modules\User\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Modules\File\Models\File;
+use App\Modules\Folder\Models\Folder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Folder;
-use App\Models\File;
 
 class User extends Authenticatable
 {

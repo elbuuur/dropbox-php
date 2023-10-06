@@ -2,29 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Traits\UpdateMemoryLimitTrait;
-use App\Http\Controllers\Traits\FileUploadTrait;
 use App\Http\Controllers\Traits\FileStructureTrait;
+use App\Http\Controllers\Traits\FileUploadTrait;
+use App\Http\Requests\FileRequest;
 use App\Http\Requests\UploadFileRequest;
-use App\Models\File;
+use App\Modules\File\Models\File;
 use App\Modules\User\Services\UserMemoryLimitService;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\FileRequest;
-use App\Http\Resources\FileResource;
-use App\Http\Controllers\Traits\CacheTrait;
+use App\Modules\File\Services\FileCacheService;
 
 
 class FileController extends Controller
 {
-    use FileUploadTrait, FileStructureTrait, UpdateMemoryLimitTrait, CacheTrait;
+    use FileUploadTrait, FileStructureTrait;
 
     private UserMemoryLimitService $userMemoryLimitService;
+    private FileCacheService $fileCacheService;
 
-    public function __construct(UserMemoryLimitService $userMemoryLimitService)
+    public function __construct(
+        UserMemoryLimitService $userMemoryLimitService,
+        FileCacheService $fileCacheService
+    )
     {
         parent::__construct();
 
         $this->userMemoryLimitService = $userMemoryLimitService;
+        $this->fileCacheService = $fileCacheService;
     }
 
     /**
@@ -149,7 +152,7 @@ class FileController extends Controller
                     $addedFiles[] = $formattedFile;
                     $filesSize += $fileSize;
 
-                    $this->putFileCache($formattedFile, $fileModel->id);
+                    $this->fileCacheService->putFileCache($formattedFile, $fileModel->id);
                 }
 
                 $this->userMemoryLimitService->updateLimitAfterUpload($filesSize);
@@ -159,7 +162,7 @@ class FileController extends Controller
                     'data' => [
                         'files' => $addedFiles
                     ]
-                ], 200);
+                ]);
             } else {
                 throw new \Exception('File not found');
             }
@@ -279,7 +282,7 @@ class FileController extends Controller
 
         $formattedFile = $this->fileFormatData($file, $media);
 
-        $this->putFileCache($formattedFile, $file->id);
+        $this->fileCacheService->putFileCache($formattedFile, $file->id);
 
         return response()->json([
             'status' => 'success',

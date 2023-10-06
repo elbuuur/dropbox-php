@@ -2,22 +2,24 @@
 
 namespace App\Modules\User\Services;
 
-use App\Http\Controllers\Traits\CacheTrait;
 use App\Modules\User\Repositories\UserRepositoryInterface;
+use App\Modules\File\Services\FileCacheService;
 
 class UserMemoryLimitService
 {
-    use CacheTrait;
     private UserRepositoryInterface $userRepository;
     private UserCacheService $userCacheService;
+    private FileCacheService $fileCacheService;
 
     public function __construct(
         UserRepositoryInterface $userRepository,
-        UserCacheService $userCacheService
+        UserCacheService $userCacheService,
+        FileCacheService $fileCacheService
     )
     {
         $this->userRepository = $userRepository;
         $this->userCacheService = $userCacheService;
+        $this->fileCacheService = $fileCacheService;
     }
 
     public function updateLimitAfterUpload($fileSize): void
@@ -32,12 +34,14 @@ class UserMemoryLimitService
     public function updateLimitAfterDelete($file): void
     {
         $user = auth()->user();
+        $fileId = $file->id;
 
-        if($cacheFile = $this->getFileCache($file->id)) {
+        $cacheFile = $this->fileCacheService->getFileCache($fileId);
+
+        if($cacheFile) {
             $fileSize = $cacheFile['size'];
             $this->userRepository->decreaseUserUploadLimit($user, $fileSize);
-
-            $this->invalidateFileCache($file->id);
+            $this->fileCacheService->invalidateFileCache($fileId);
         } else {
             $mediaFile = $file->getMedia('file')->first();
             $fileSize = $mediaFile->size;
@@ -50,6 +54,9 @@ class UserMemoryLimitService
 
     public function checkUploadLimit(): int|NULL
     {
-        return config('constants.UPLOAD_LIMIT') - auth()->user()->upload_limit;
+        $userUploadLimit = auth()->user()->upload_limit;
+        $systemUploadLimit = config('constants.UPLOAD_LIMIT');
+
+        return $systemUploadLimit - $userUploadLimit;
     }
 }

@@ -8,12 +8,21 @@ use Illuminate\Support\Facades\Hash;
 class UserRepository implements UserRepositoryInterface
 {
 
+    protected User $userModel;
+    protected Hash $hashService;
+
+    public function __construct(User $userModel)
+    {
+        $this->userModel = $userModel;
+        $this->hashService = Hash::getFacadeRoot();
+    }
+
     public function register(array $data)
     {
-        return User::create([
+        return $this->userModel->create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'password' => $this->hashService->make($data['password']),
             'upload_limit' => 0
         ]);
     }

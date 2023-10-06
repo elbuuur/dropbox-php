@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Modules\File\Models;
 
 use App\Folder;
 use App\User;

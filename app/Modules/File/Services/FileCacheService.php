@@ -1,23 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Traits;
+namespace App\Modules\File\Services;
 
-use App\Models\File;
-use App\Modules\User\Models\User;
+use App\Http\Controllers\Traits\FileStructureTrait;
+use App\Modules\File\Models\File;
 use Illuminate\Support\Facades\Cache;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-
-trait CacheTrait
+class FileCacheService
 {
     use FileStructureTrait;
 
     private string $cacheFileTag;
     private string $cacheFileKey;
     private int $cacheFileTime;
-    private string $cacheUserTag;
-    private string $cacheUserKey;
-    private int $cacheUserTime;
     private string $cacheTrashTag;
 
     public function __construct()
@@ -25,9 +21,6 @@ trait CacheTrait
         $this->cacheFileTag = config('constants.FILE_CACHE_TAG');
         $this->cacheFileKey = config('constants.FILE_CACHE_KEY');
         $this->cacheFileTime = config('constants.FILE_CACHE_TIME');
-        $this->cacheUserTag = config('constants.USER_CACHE_TAG');
-        $this->cacheUserKey = config('constants.USER_CACHE_KEY');
-        $this->cacheUserTime = config('constants.USER_CACHE_TIME');
         $this->cacheTrashTag = config('constants.TRASH_CACHE_TAG');
     }
 
@@ -86,5 +79,4 @@ trait CacheTrait
     {
         return Cache::tags($this->cacheFileTag)->get($this->cacheFileKey . $fileId);
     }
-
 }

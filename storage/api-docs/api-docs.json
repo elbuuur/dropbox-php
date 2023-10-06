@@ -375,412 +375,6 @@
                 ]
             }
         },
-        "/api/folder/create": {
-            "post": {
-                "tags": [
-                    "Folder"
-                ],
-                "summary": "Create folder",
-                "description": "Send bearer token and folder name",
-                "operationId": "1a59b594f004236a51f43bbb25fecda1",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "folder_name": {
-                                        "type": "string",
-                                        "example": "Holidays"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Folder added",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "folder": {
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "integer",
-                                                            "example": 5
-                                                        },
-                                                        "folder_name": {
-                                                            "type": "string",
-                                                            "example": "Holidays"
-                                                        },
-                                                        "created_by_id": {
-                                                            "type": "integer",
-                                                            "example": 1
-                                                        },
-                                                        "created_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        },
-                                                        "updated_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Invalid input data",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation errors"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "folder_name": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "example": "The folder_name has already been taken."
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/folder/{id}": {
-            "put": {
-                "tags": [
-                    "Folder"
-                ],
-                "summary": "Update folder",
-                "description": "Send bearer token and folder id",
-                "operationId": "c77f299656107d286645f0ce4ed2f757",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Folder id",
-                        "required": true,
-                        "example": "4"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/x-www-form-urlencoded": {
-                            "schema": {
-                                "properties": {
-                                    "folder_name": {
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Update folder",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "folder": {
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "integer",
-                                                            "example": 5
-                                                        },
-                                                        "folder_name": {
-                                                            "type": "string",
-                                                            "example": "new name"
-                                                        },
-                                                        "created_by_id": {
-                                                            "type": "integer",
-                                                            "example": 1
-                                                        },
-                                                        "created_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        },
-                                                        "updated_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "Folder"
-                ],
-                "summary": "Folder structure display",
-                "description": "Send bearer token and folder id",
-                "operationId": "ec45fe2ddc490c93401f434a8bbfdd85",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Folder id",
-                        "required": true,
-                        "example": "4"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Folder structure display",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "folder": {
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "integer",
-                                                            "example": 5
-                                                        },
-                                                        "folder_name": {
-                                                            "type": "string",
-                                                            "example": "Holidays"
-                                                        },
-                                                        "created_by_id": {
-                                                            "type": "integer",
-                                                            "example": 1
-                                                        },
-                                                        "created_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        },
-                                                        "updated_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "files": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "name": {
-                                                                "type": "string",
-                                                                "example": "IMG_0514"
-                                                            },
-                                                            "file_name": {
-                                                                "type": "string",
-                                                                "example": "IMG_0514.jpg"
-                                                            },
-                                                            "uuid": {
-                                                                "type": "string",
-                                                                "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
-                                                            },
-                                                            "thumb": {
-                                                                "type": "string",
-                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
-                                                            },
-                                                            "original_url": {
-                                                                "type": "string",
-                                                                "example": "http://localhost/storage/10/IMG_0514.JPG"
-                                                            },
-                                                            "extension": {
-                                                                "type": "string",
-                                                                "example": "JPG"
-                                                            },
-                                                            "size": {
-                                                                "type": "integer",
-                                                                "example": 5199684
-                                                            },
-                                                            "folder_id": {
-                                                                "type": "integer",
-                                                                "example": 4
-                                                            },
-                                                            "shelf_life": {
-                                                                "type": "string",
-                                                                "format": "date"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Folder not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Folder not found or deleted"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Folder"
-                ],
-                "summary": "Delete folder",
-                "description": "Send bearer token and folder id",
-                "operationId": "aa15e9bdf2388f630a2a6edc5e576685",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Folder id",
-                        "required": true,
-                        "example": "4"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Delete folder",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "folder": {
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "integer",
-                                                            "example": 5
-                                                        },
-                                                        "folder_name": {
-                                                            "type": "string",
-                                                            "example": "new name"
-                                                        },
-                                                        "created_by_id": {
-                                                            "type": "integer",
-                                                            "example": 1
-                                                        },
-                                                        "created_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        },
-                                                        "updated_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        },
-                                                        "deleted_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
         "/api/home": {
             "post": {
                 "tags": [
@@ -1234,6 +828,412 @@
                 ]
             }
         },
+        "/api/folder/create": {
+            "post": {
+                "tags": [
+                    "Folder"
+                ],
+                "summary": "Create folder",
+                "description": "Send bearer token and folder name",
+                "operationId": "24ad21a09d912457274cf3c269a0410d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "folder_name": {
+                                        "type": "string",
+                                        "example": "Holidays"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Folder added",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "folder": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "folder_name": {
+                                                            "type": "string",
+                                                            "example": "Holidays"
+                                                        },
+                                                        "created_by_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "updated_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation errors"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "folder_name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The folder_name has already been taken."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/folder/{id}": {
+            "put": {
+                "tags": [
+                    "Folder"
+                ],
+                "summary": "Update folder",
+                "description": "Send bearer token and folder id",
+                "operationId": "225dd1490f133b88db3fb87213a0f14c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Folder id",
+                        "required": true,
+                        "example": "4"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "folder_name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update folder",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "folder": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "folder_name": {
+                                                            "type": "string",
+                                                            "example": "new name"
+                                                        },
+                                                        "created_by_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "updated_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Folder"
+                ],
+                "summary": "Folder structure display",
+                "description": "Send bearer token and folder id",
+                "operationId": "09d72e95bfe456aa0ccb00aa5b18cde0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Folder id",
+                        "required": true,
+                        "example": "4"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Folder structure display",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "folder": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "folder_name": {
+                                                            "type": "string",
+                                                            "example": "Holidays"
+                                                        },
+                                                        "created_by_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "updated_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "files": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514"
+                                                            },
+                                                            "file_name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514.jpg"
+                                                            },
+                                                            "uuid": {
+                                                                "type": "string",
+                                                                "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
+                                                            },
+                                                            "thumb": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
+                                                            },
+                                                            "original_url": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/10/IMG_0514.JPG"
+                                                            },
+                                                            "extension": {
+                                                                "type": "string",
+                                                                "example": "JPG"
+                                                            },
+                                                            "size": {
+                                                                "type": "integer",
+                                                                "example": 5199684
+                                                            },
+                                                            "folder_id": {
+                                                                "type": "integer",
+                                                                "example": 4
+                                                            },
+                                                            "shelf_life": {
+                                                                "type": "string",
+                                                                "format": "date"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Folder not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Folder not found or deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Folder"
+                ],
+                "summary": "Delete folder",
+                "description": "Send bearer token and folder id",
+                "operationId": "c5475fcd3ed1f5bae1e59688982392f9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Folder id",
+                        "required": true,
+                        "example": "4"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete folder",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "folder": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "folder_name": {
+                                                            "type": "string",
+                                                            "example": "new name"
+                                                        },
+                                                        "created_by_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "updated_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "deleted_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/register": {
             "post": {
                 "tags": [
@@ -1295,6 +1295,10 @@
                                                             "type": "string",
                                                             "example": "johndoe@example.com"
                                                         },
+                                                        "upload_limit": {
+                                                            "type": "integer",
+                                                            "example": 0
+                                                        },
                                                         "created_at": {
                                                             "type": "string",
                                                             "format": "date-time"
@@ -1302,6 +1306,19 @@
                                                         "updated_at": {
                                                             "type": "string",
                                                             "format": "date-time"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "storage": {
+                                                    "properties": {
+                                                        "max_file_size": {
+                                                            "type": "integer",
+                                                            "example": 20971520
+                                                        },
+                                                        "system_upload_limit": {
+                                                            "type": "integer",
+                                                            "example": 104857600
                                                         }
                                                     },
                                                     "type": "object"

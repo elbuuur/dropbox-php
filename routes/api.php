@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\FileController;
-use App\Http\Controllers\FolderController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrashController;
-use Illuminate\Support\Facades\Route;
+use App\Modules\Folder\Controllers\FolderController;
 use App\Modules\User\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------

@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Traits;
 
 use App\Http\Requests\UploadFileRequest;
+use App\Modules\Folder\Models\Folder;
 use Illuminate\Http\Request;
-use Intervention\Image\Facades\Image;
-use App\Models\Folder;
 
 
 trait FileUploadTrait

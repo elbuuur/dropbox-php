@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Traits\CacheTrait;
+use App\Modules\File\Services\FileCacheService;
 
 class HomeController extends Controller
 {
-    use CacheTrait;
+    private FileCacheService $fileCacheService;
+
+    public function __construct(FileCacheService $fileCacheService)
+    {
+        $this->fileCacheService = $fileCacheService;
+    }
+
 
     /**
      * Get structure from root
@@ -78,7 +84,7 @@ class HomeController extends Controller
         $files = [];
 
         foreach ($filesModel as $file) {
-            $formattedFile = $this->rememberFileCache($file);
+            $formattedFile = $this->fileCacheService->rememberFileCache($file);
             $files[] = $formattedFile;
         }
 
