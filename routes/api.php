@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth;
-use App\Http\Controllers\FolderController;
-use App\Http\Controllers\FileController;
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrashController;
+use App\Modules\Folder\Controllers\FolderController;
+use App\Modules\User\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,13 +18,12 @@ use App\Http\Controllers\TrashController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-Route::post('register', [Auth\RegisterController::class, 'register']);
-Route::post('login', [Auth\LoginController::class, 'login']);
+Route::post('register', [UserController::class, 'register']);
+Route::post('login', [UserController::class, 'login']);
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::post('user-info', [Auth\LoginController::class, 'info']);
+    Route::post('user-info', [UserController::class, 'info']);
 
     Route::post('folder/create', [FolderController::class, 'create']);
     Route::post('folder/{folder}', [FolderController::class, 'index']);

@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\File;
-use App\Models\Folder;
-use Illuminate\Support\Facades\Log;
+use App\Modules\File\Models\File;
+use App\Modules\Folder\Models\Folder;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class DeleteExpiredTrashFiles extends Command

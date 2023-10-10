@@ -1,19 +1,38 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Folder\Controllers;
 
-use App\Http\Controllers\Traits\FolderTrait;
-use App\Models\Folder;
-use App\Http\Requests\FolderRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\FileStructureTrait;
-use App\Http\Controllers\Traits\UpdateMemoryLimitTrait;
-use App\Http\Controllers\Traits\CacheTrait;
+use App\Http\Controllers\Traits\FolderTrait;
+use App\Modules\Folder\Models\Folder;
+use App\Modules\Folder\Requests\FolderRequest;
+use App\Modules\User\Services\UserMemoryLimitService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
+use App\Modules\Folder\Repositories\FolderRepositoryInterface;
+use App\Modules\File\Services\FileCacheService;
 
 class FolderController extends Controller
 {
-    use FileStructureTrait, FolderTrait, UpdateMemoryLimitTrait, CacheTrait;
+    use FileStructureTrait, FolderTrait;
+
+    private FolderRepositoryInterface $folderRepository;
+    private UserMemoryLimitService $userMemoryLimitService;
+    private FileCacheService $fileCacheService;
+
+    public function __construct(
+        FolderRepositoryInterface $folderRepository,
+        UserMemoryLimitService $userMemoryLimitService,
+        FileCacheService $fileCacheService
+    )
+    {
+        parent::__construct();
+
+        $this->folderRepository = $folderRepository;
+        $this->userMemoryLimitService = $userMemoryLimitService;
+        $this->fileCacheService = $fileCacheService;
+    }
 
     /**
      * User folder create
@@ -77,10 +96,12 @@ class FolderController extends Controller
      */
     public function create(FolderRequest $request): JsonResponse
     {
-        $folder = Folder::create([
+        $folderData = [
             'folder_name' => $request->folder_name,
             'created_by_id' => $request->user()->id
-        ]);
+        ];
+
+        $folder = $this->folderRepository->create($folderData);
 
         return response()->json([
             'status' => 'success',
@@ -156,19 +177,18 @@ class FolderController extends Controller
     public function index(string $id): JsonResponse
     {
         try {
-            $folderModel = Folder::findOrFail($id);
-            $filesModel = $folderModel->files()
-                ->whereNull('deleted_at')
-                ->get();
+            $folderModel = $this->folderRepository->getFolderWithFiles($id);
+            $filesCollection = $folderModel->files;
 
             $files = [];
 
-            foreach ($filesModel as $file) {
-                $formattedFile = $this->rememberFileCache($file);
+            foreach ($filesCollection as $file) {
+                $formattedFile = $this->fileCacheService->rememberFileCache($file);
                 $files[] = $formattedFile;
             }
 
-            $folderSize = collect($files)->sum('size');
+            $folderSize = $folderModel->files->sum('size');
+
             $folder = $this->folderFormatData($folderModel, $folderSize);
 
             return response()->json([
@@ -300,7 +320,7 @@ class FolderController extends Controller
             $filesModel = $folder->files()->get();
             foreach ($filesModel as $file) {
                 $file->delete();
-                $this->updateLimitAfterDelete($file);
+                $this->userMemoryLimitService->updateLimitAfterDelete($file);
             }
 
             $folder->delete();

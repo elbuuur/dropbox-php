@@ -1,49 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Traits;
+namespace App\Modules\File\Services;
 
-use App\Models\File;
-use App\Models\User;
-use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Traits\FileStructureTrait;
+use App\Modules\File\Models\File;
+use Illuminate\Support\Facades\Cache;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-
-trait CacheTrait
+class FileCacheService
 {
     use FileStructureTrait;
 
-    private $cacheFileTag;
-    private $cacheFileKey;
-    private $cacheFileTime;
-    private $cacheUserTag;
-    private $cacheUserKey;
-    private $cacheUserTime;
-    private $cacheTrashTag;
+    private string $cacheFileTag;
+    private string $cacheFileKey;
+    private int $cacheFileTime;
+    private string $cacheTrashTag;
 
     public function __construct()
     {
         $this->cacheFileTag = config('constants.FILE_CACHE_TAG');
         $this->cacheFileKey = config('constants.FILE_CACHE_KEY');
         $this->cacheFileTime = config('constants.FILE_CACHE_TIME');
-        $this->cacheUserTag = config('constants.USER_CACHE_TAG');
-        $this->cacheUserKey = config('constants.USER_CACHE_KEY');
-        $this->cacheUserTime = config('constants.USER_CACHE_TIME');
         $this->cacheTrashTag = config('constants.TRASH_CACHE_TAG');
-    }
-
-
-    public function rememberUserCache($token): User
-    {
-        return Cache::tags($this->cacheUserTag)->remember($this->cacheUserKey . $token->tokenable->id, now()->addMinute($this->cacheUserTime), function () use ($token) {
-            return $token->tokenable;
-        });
-    }
-
-
-    public function invalidateUserCache($userId): void
-    {
-        Cache::tags($this->cacheUserTag)->forget($this->cacheUserKey);
     }
 
 
@@ -101,5 +79,4 @@ trait CacheTrait
     {
         return Cache::tags($this->cacheFileTag)->get($this->cacheFileKey . $fileId);
     }
-
 }
