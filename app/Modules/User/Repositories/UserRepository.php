@@ -9,12 +9,10 @@ class UserRepository implements UserRepositoryInterface
 {
 
     protected User $userModel;
-    protected Hash $hashService;
 
     public function __construct(User $userModel)
     {
         $this->userModel = $userModel;
-        $this->hashService = Hash::getFacadeRoot();
     }
 
     public function register(array $data)
@@ -22,7 +20,7 @@ class UserRepository implements UserRepositoryInterface
         return $this->userModel->create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => $this->hashService->make($data['password']),
+            'password' => Hash::make($data['password']),
             'upload_limit' => 0
         ]);
     }

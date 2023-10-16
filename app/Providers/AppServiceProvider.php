@@ -7,6 +7,8 @@ use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Repositories\UserRepository;
 use App\Modules\Folder\Repositories\FolderRepository;
 use App\Modules\Folder\Repositories\FolderRepositoryInterface;
+use App\Modules\File\Repositories\FileRepositoryInterface;
+use App\Modules\File\Repositories\FileRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(FolderRepositoryInterface::class, FolderRepository::class);
+        $this->app->bind(FileRepositoryInterface::class, FileRepository::class);
     }
 
     /**

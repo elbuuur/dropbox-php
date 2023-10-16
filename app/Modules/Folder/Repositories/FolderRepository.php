@@ -26,4 +26,19 @@ class FolderRepository implements FolderRepositoryInterface
                 ->with('files')
                 ->findOrFail($folderId);
     }
+
+    public function getFolderById(int $folderId): Folder
+    {
+        return $this->folderModel->findOrFail($folderId);
+    }
+
+    public function updateFolderName(int $folderId, string $folderName): Folder
+    {
+        $folder = $this->getFolderById($folderId);
+
+        $folder->folder_name = $folderName;
+        $folder->save();
+
+        return $folder;
+    }
 }

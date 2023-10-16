@@ -144,7 +144,6 @@ class FileController extends Controller
 
                     $media = $fileModel
                         ->addMedia($file)
-                        ->withResponsiveImages()
                         ->toMediaCollection('file');
 
                     $formattedFile = $this->fileFormatData($fileModel, $media);
@@ -337,7 +336,7 @@ class FileController extends Controller
     {
         $file->delete();
 
-        $this->userMemoryLimitService->updateLimitAfterDelete($file);
+        $this->userMemoryLimitService->updateLimitAfterDelete([$file]);
 
         return response()->json([
             'status' => 'success',
