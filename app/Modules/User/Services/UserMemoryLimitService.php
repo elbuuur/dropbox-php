@@ -4,22 +4,27 @@ namespace App\Modules\User\Services;
 
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\File\Services\FileCacheService;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Modules\File\Services\MediaService;
 
 class UserMemoryLimitService
 {
     private UserRepositoryInterface $userRepository;
     private UserCacheService $userCacheService;
     private FileCacheService $fileCacheService;
+    private MediaService $mediaService;
 
     public function __construct(
         UserRepositoryInterface $userRepository,
         UserCacheService $userCacheService,
-        FileCacheService $fileCacheService
+        FileCacheService $fileCacheService,
+        MediaService $mediaService
     )
     {
         $this->userRepository = $userRepository;
         $this->userCacheService = $userCacheService;
         $this->fileCacheService = $fileCacheService;
+        $this->mediaService = $mediaService;
     }
 
     public function updateLimitAfterUpload($fileSize): void
@@ -31,25 +36,30 @@ class UserMemoryLimitService
         $this->userCacheService->invalidateUserCache($user->id);
     }
 
-    public function updateLimitAfterDelete($file): void
+    /**
+     * @param array $fileIds
+     * @return void
+     */
+    public function updateLimitAfterDelete(array $fileIds): void
     {
         $user = auth()->user();
-        $fileId = $file->id;
 
-        $cacheFile = $this->fileCacheService->getFileCache($fileId);
+        $filesSize = 0;
 
-        if($cacheFile) {
-            $fileSize = $cacheFile['size'];
-            $this->userRepository->decreaseUserUploadLimit($user, $fileSize);
-            $this->fileCacheService->invalidateFileCache($fileId);
-        } else {
-            $mediaFile = $file->getMedia('file')->first();
-            $fileSize = $mediaFile->size;
+        foreach ($fileIds as $fileId) {
+            $cachedFile = $this->fileCacheService->getFileCache($fileId);
 
-            $this->userRepository->decreaseUserUploadLimit($user, $fileSize);
+            if($cachedFile) {
+                $filesSize += $cachedFile['size'];
+
+                continue;
+            }
+
+            $fileSize = $this->mediaService->getSizeByFileId($fileId);
+            $filesSize += $fileSize;
         }
 
-        $this->userCacheService->invalidateUserCache($user->id);
+        $this->userRepository->decreaseUserUploadLimit($user, $filesSize);
     }
 
     public function checkUploadLimit(): int|NULL

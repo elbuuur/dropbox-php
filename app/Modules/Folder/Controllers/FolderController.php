@@ -5,9 +5,6 @@ namespace App\Modules\Folder\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\FileStructureTrait;
 use App\Http\Controllers\Traits\FolderTrait;
-use App\Modules\File\Models\File;
-use App\Modules\File\Resources\FileResource;
-use App\Modules\Folder\Models\Folder;
 use App\Modules\Folder\Requests\FolderRequest;
 use App\Modules\User\Services\UserMemoryLimitService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -15,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use App\Modules\Folder\Repositories\FolderRepositoryInterface;
 use App\Modules\File\Services\FileCacheService;
 use App\Modules\Folder\Resources\FolderResource;
-use Illuminate\Support\Facades\DB;
+use App\Modules\File\Repositories\FileRepositoryInterface;
 
 class FolderController extends Controller
 {
@@ -24,11 +21,13 @@ class FolderController extends Controller
     private FolderRepositoryInterface $folderRepository;
     private UserMemoryLimitService $userMemoryLimitService;
     private FileCacheService $fileCacheService;
+    private FileRepositoryInterface $fileRepository;
 
     public function __construct(
         FolderRepositoryInterface $folderRepository,
         UserMemoryLimitService $userMemoryLimitService,
-        FileCacheService $fileCacheService
+        FileCacheService $fileCacheService,
+        FileRepositoryInterface $fileRepository
     )
     {
         parent::__construct();
@@ -36,6 +35,7 @@ class FolderController extends Controller
         $this->folderRepository = $folderRepository;
         $this->userMemoryLimitService = $userMemoryLimitService;
         $this->fileCacheService = $fileCacheService;
+        $this->fileRepository = $fileRepository;
     }
 
     /**
@@ -260,14 +260,21 @@ class FolderController extends Controller
      */
     public function update(FolderRequest $request, string $id): JsonResponse
     {
-        $folder = Folder::findOrFail($id);
-        $folder->folder_name = $request->folder_name;
-        $folder->save();
+        try {
+            $folderName = $request->folder_name;
 
-        return response()->json([
-            'status' => 'success',
-            'data' => compact('folder'),
-        ]);
+            $folder = $this->folderRepository->updateFolderName($id, $folderName);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => compact('folder'),
+            ]);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json([
+            'status' => 'error',
+            'message' => 'Folder not found or deleted'
+            ], 404);
+        }
     }
 
     /**
@@ -315,13 +322,13 @@ class FolderController extends Controller
     public function destroy(string $id): JsonResponse
     {
         try {
-            $folder = Folder::findOrFail($id);
+            $folder = $this->folderRepository->getFolderWithFiles($id);
 
-            $filesModel = $folder->files()->get();
-            foreach ($filesModel as $file) {
-                $file->delete();
-                $this->userMemoryLimitService->updateLimitAfterDelete($file);
-            }
+            $fileIds = $folder->files->pluck('id')->toArray();
+
+            $this->userMemoryLimitService->updateLimitAfterDelete($fileIds);
+
+            $this->fileRepository->deleteFilesByIds($fileIds);
 
             $folder->delete();
 

@@ -10,7 +10,6 @@ use App\Modules\File\Services\FileStructureService;
 
 class FileRepository implements FileRepositoryInterface
 {
-
     private File $fileModel;
     private MediaService $mediaService;
     private FileStructureService $fileStructureService;
@@ -43,5 +42,10 @@ class FileRepository implements FileRepositoryInterface
         $thumbUrls = $this->mediaService->getThumbUrls($mediaFiles);
 
         return $this->fileStructureService->structureData($files, $mediaFiles, $thumbUrls);
+    }
+
+    public function deleteFilesByIds(array $fileIds): void
+    {
+        $this->fileModel->destroy($fileIds);
     }
 }

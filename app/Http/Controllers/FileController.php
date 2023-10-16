@@ -336,7 +336,7 @@ class FileController extends Controller
     {
         $file->delete();
 
-        $this->userMemoryLimitService->updateLimitAfterDelete($file);
+        $this->userMemoryLimitService->updateLimitAfterDelete([$file]);
 
         return response()->json([
             'status' => 'success',

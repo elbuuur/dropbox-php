@@ -27,4 +27,13 @@ class MediaService
             return $media->getUrl('thumb');
         });
     }
+
+    /**
+     * @param int $fileId
+     * @return int
+     */
+    public function getSizeByFileId(int $fileId): int
+    {
+        return $this->media->where('model_id', $fileId)->first()['size'];
+    }
 }
