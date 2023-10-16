@@ -5,19 +5,25 @@ namespace App\Modules\File\Services;
 use App\Http\Controllers\Traits\FileStructureTrait;
 use App\Modules\File\Models\File;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Modules\File\Resources\FileResource;
+use App\Modules\File\Repositories\FileRepositoryInterface;
 
 class FileCacheService
 {
     use FileStructureTrait;
 
+    private FileRepositoryInterface $fileRepository;
     private string $cacheFileTag;
     private string $cacheFileKey;
     private int $cacheFileTime;
     private string $cacheTrashTag;
 
-    public function __construct()
+    public function __construct(FileRepositoryInterface $fileRepository)
     {
+        $this->fileRepository = $fileRepository;
+
         $this->cacheFileTag = config('constants.FILE_CACHE_TAG');
         $this->cacheFileKey = config('constants.FILE_CACHE_KEY');
         $this->cacheFileTime = config('constants.FILE_CACHE_TIME');
@@ -25,9 +31,9 @@ class FileCacheService
     }
 
 
-    public function putFileCache($formattedFile, $fileId): void
+    public function putFileCache($file, $fileId): void
     {
-        Cache::tags($this->cacheFileTag)->put($this->cacheFileKey . $fileId, $formattedFile, now()->addMinute($this->cacheFileTime));
+        Cache::tags($this->cacheFileTag)->put($this->cacheFileKey . $fileId, $file, now()->addMinute($this->cacheFileTime));
     }
 
 
@@ -60,11 +66,10 @@ class FileCacheService
     }
 
 
-    public function rememberFileCache(File $file): array
+    public function rememberFileCache(int $fileId): File
     {
-        return Cache::tags($this->cacheFileTag)->remember($this->cacheFileKey . $file->id, now()->addMinute($this->cacheFileTime), function () use ($file) {
-            $mediaFile = $file->getMedia('file')->first();
-            return $this->fileFormatData($file, $mediaFile);
+        return Cache::tags($this->cacheFileTag)->remember($this->cacheFileKey . $fileId, now()->addMinute($this->cacheFileTime), function () use ($fileId) {
+            return $this->fileRepository->getFileById($fileId);
         });
     }
 
@@ -75,8 +80,36 @@ class FileCacheService
     }
 
 
-    public function getFileCache($fileId): array|NULL
+    public function getFileCache($fileId)
     {
         return Cache::tags($this->cacheFileTag)->get($this->cacheFileKey . $fileId);
+    }
+
+    public function loadFilesFromCacheOrDB(Collection|array $fileIds): array
+    {
+        $files = [];
+        $uncachedFileIds = [];
+
+        foreach ($fileIds as $fileId) {
+            $cachedFile = $this->getFileCache($fileId);
+
+            if (!$cachedFile) {
+                $uncachedFileIds[] = $fileId;
+            } else {
+                $files[] = $cachedFile;
+            }
+        }
+
+        if ($uncachedFileIds) {
+            $uncachedFiles = $this->fileRepository->getFilesAndMediaInfo($uncachedFileIds);
+
+            foreach ($uncachedFiles as $uncachedFile) {
+                $this->putFileCache($uncachedFile, $uncachedFile['id']);
+            }
+
+            $files = [...$files, ...$uncachedFiles];
+        }
+
+        return $files;
     }
 }

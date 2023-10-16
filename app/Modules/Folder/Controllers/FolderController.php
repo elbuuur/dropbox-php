@@ -5,6 +5,8 @@ namespace App\Modules\Folder\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\FileStructureTrait;
 use App\Http\Controllers\Traits\FolderTrait;
+use App\Modules\File\Models\File;
+use App\Modules\File\Resources\FileResource;
 use App\Modules\Folder\Models\Folder;
 use App\Modules\Folder\Requests\FolderRequest;
 use App\Modules\User\Services\UserMemoryLimitService;
@@ -12,6 +14,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use App\Modules\Folder\Repositories\FolderRepositoryInterface;
 use App\Modules\File\Services\FileCacheService;
+use App\Modules\Folder\Resources\FolderResource;
+use Illuminate\Support\Facades\DB;
 
 class FolderController extends Controller
 {
@@ -178,18 +182,14 @@ class FolderController extends Controller
     {
         try {
             $folderModel = $this->folderRepository->getFolderWithFiles($id);
-            $filesCollection = $folderModel->files;
 
-            $files = [];
+            $fileIds = $folderModel->files->pluck('id');
 
-            foreach ($filesCollection as $file) {
-                $formattedFile = $this->fileCacheService->rememberFileCache($file);
-                $files[] = $formattedFile;
-            }
+            $files = $this->fileCacheService->loadFilesFromCacheOrDB($fileIds);
 
-            $folderSize = $folderModel->files->sum('size');
+            $folderSize = collect($files)->sum('size');;
 
-            $folder = $this->folderFormatData($folderModel, $folderSize);
+            $folder = new FolderResource($folderModel, $folderSize);
 
             return response()->json([
                 'status' => 'success',
