@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\File\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\FileStructureTrait;
-use App\Http\Controllers\Traits\FileUploadTrait;
 use App\Http\Requests\FileRequest;
 use App\Http\Requests\UploadFileRequest;
 use App\Modules\File\Models\File;
+use App\Modules\File\Services\FileCacheService;
 use App\Modules\User\Services\UserMemoryLimitService;
 use Illuminate\Http\JsonResponse;
-use App\Modules\File\Services\FileCacheService;
-
+use App\Modules\File\Repositories\FileRepositoryInterface;
+use App\Modules\Folder\Repositories\FolderRepositoryInterface;
+use App\Modules\File\Services\FileUploadService;
 
 class FileController extends Controller
 {
@@ -18,16 +20,25 @@ class FileController extends Controller
 
     private UserMemoryLimitService $userMemoryLimitService;
     private FileCacheService $fileCacheService;
+    private FileRepositoryInterface $fileRepository;
+    private FolderRepositoryInterface $folderRepository;
+    private FileUploadService $fileUploadService;
 
     public function __construct(
         UserMemoryLimitService $userMemoryLimitService,
-        FileCacheService $fileCacheService
+        FileCacheService $fileCacheService,
+        FileRepositoryInterface $fileRepository,
+        FolderRepositoryInterface $folderRepository,
+        FileUploadService $fileUploadService
     )
     {
         parent::__construct();
 
         $this->userMemoryLimitService = $userMemoryLimitService;
         $this->fileCacheService = $fileCacheService;
+        $this->fileRepository = $fileRepository;
+        $this->folderRepository = $folderRepository;
+        $this->fileUploadService = $fileUploadService;
     }
 
     /**
@@ -109,62 +120,40 @@ class FileController extends Controller
     public function upload(UploadFileRequest $request): JsonResponse
     {
         try {
-            if ($request->hasFile('file')) {
-                $fileManager = new File();
-                $folderId = (int)$request->folder_id;
-
-                if($folderId && !$this->isFolderExist($folderId)) {
-                    throw new \Exception('Folder does not exist');
-                }
-
-                $addedFiles = [];
-                $filesSize = null;
-                $maxFileSize = config('media-library.max_file_size');
-
-                foreach ($request->file as $file) {
-                    $fileSize = $file->getSize();
-
-                    if($fileSize > $maxFileSize) {
-                        throw new \Exception('File upload limit exceeded');
-                    }
-
-                    if ($this->phpDetect($file)) {
-                        throw new \Exception('PHP files are not allowed to be uploaded');
-                    }
-
-                    $fileModel = $fileManager->create([
-                        'uuid' => (string)\Webpatser\Uuid\Uuid::generate(),
-                        'folder_id' => $folderId ?: null,
-                        'created_by_id' => $request->user()->id,
-                        'shelf_life' =>
-                            $request->shelf_life
-                            ? now()->addDays((int)$request->shelf_life)->toDateString()
-                            : null
-                    ]);
-
-                    $media = $fileModel
-                        ->addMedia($file)
-                        ->toMediaCollection('file');
-
-                    $formattedFile = $this->fileFormatData($fileModel, $media);
-
-                    $addedFiles[] = $formattedFile;
-                    $filesSize += $fileSize;
-
-                    $this->fileCacheService->putFileCache($formattedFile, $fileModel->id);
-                }
-
-                $this->userMemoryLimitService->updateLimitAfterUpload($filesSize);
-
-                return response()->json([
-                    'status' => 'success',
-                    'data' => [
-                        'files' => $addedFiles
-                    ]
-                ]);
-            } else {
+            if (!$request->hasFile('file')) {
                 throw new \Exception('File not found');
             }
+
+            $folderId = (int)$request->folder_id;
+            $userId = $request->user()->id;
+            $shelfLife = $request->shelf_life
+                        ? now()->addDays((int)$request->shelf_life)->toDateString()
+                        : null;
+
+            $isFolderBelongsToUser = $this->folderRepository->doesFolderBelongToUser($folderId, $userId);
+
+            if($folderId && !$isFolderBelongsToUser) {
+                throw new \Exception('Folder does not exist');
+            }
+
+            $addedFiles = [];
+
+            foreach ($request->file as $file) {
+                $addedFiles[] = $this->fileUploadService
+                                     ->uploadFile($file, $folderId, $userId, $shelfLife);
+            }
+
+            $filesSize = collect($addedFiles)->sum('size');
+
+            $this->userMemoryLimitService->updateLimitAfterUpload($filesSize);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'files' => $addedFiles
+                ]
+            ]);
+
         }catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

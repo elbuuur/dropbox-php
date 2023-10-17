@@ -7,4 +7,5 @@ interface FolderRepositoryInterface
     public function getFolderWithFiles(int $folderId);
     public function getFolderById(int $folderId);
     public function updateFolderName(int $folderId, string $folderName);
+    public function doesFolderBelongToUser(int $folderId, int $createdById);
 }

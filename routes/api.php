@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\DownloadController;
-use App\Http\Controllers\FileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrashController;
+use App\Modules\File\Controllers\DownloadController;
+use App\Modules\File\Controllers\FileController;
 use App\Modules\Folder\Controllers\FolderController;
 use App\Modules\User\Controllers\UserController;
 use Illuminate\Support\Facades\Route;

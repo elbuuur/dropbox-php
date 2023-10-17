@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Traits;
+namespace App\Modules\File\Controllers;
 
 use App\Http\Requests\UploadFileRequest;
 use App\Modules\Folder\Models\Folder;

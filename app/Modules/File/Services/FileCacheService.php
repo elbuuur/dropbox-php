@@ -7,7 +7,6 @@ use App\Modules\File\Models\File;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Modules\File\Resources\FileResource;
 use App\Modules\File\Repositories\FileRepositoryInterface;
 
 class FileCacheService

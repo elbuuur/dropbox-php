@@ -41,4 +41,12 @@ class FolderRepository implements FolderRepositoryInterface
 
         return $folder;
     }
+
+    public function doesFolderBelongToUser(int $folderId, int $createdById)
+    {
+        return $this->folderModel
+                    ->where('id', $folderId)
+                    ->where('created_by_id', $createdById)
+                    ->exists();
+    }
 }

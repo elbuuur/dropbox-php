@@ -2,9 +2,12 @@
 
 namespace App\Modules\File\Services;
 
+use App\Modules\File\Models\File;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
 class FileStructureService
 {
-    public function structureData($files, $mediaFiles, $thumbUrls): array
+    public function mapStructuredData($files, $mediaFiles, $thumbUrls): array
     {
         $combined = [];
 
@@ -29,5 +32,26 @@ class FileStructureService
         }
 
         return $combined;
+    }
+
+    public function structureUploadedData(File $file, Media $media): array
+    {
+        $data = [
+            'file_name' => $media['file_name'],
+            'name' => $media['name'],
+            'uuid' => $media['uuid'],
+            'id' => $media['model_id'],
+            'extension' => $media['extension'],
+            'size' => $media['size'],
+            'media_id' => $media['id'],
+            'folder_id' => $file['folder_id'],
+            'shelf_life' => $file['shelf_life']
+        ];
+
+        if($thumbUrl = $media->getUrl('thumb')) {
+            $data['thumb'] = $thumbUrl;
+        }
+
+        return $data;
     }
 }
