@@ -4,7 +4,6 @@ namespace App\Modules\User\Services;
 
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\File\Services\FileCacheService;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Modules\File\Services\MediaService;
 
 class UserMemoryLimitService

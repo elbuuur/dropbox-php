@@ -2,6 +2,7 @@
 
 namespace App\Modules\File\Services;
 
+use App\Modules\File\Models\File;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaService

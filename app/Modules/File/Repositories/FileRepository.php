@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\File\Services\MediaService;
 use App\Modules\File\Services\FileStructureService;
+use Illuminate\Http\UploadedFile;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class FileRepository implements FileRepositoryInterface
 {
@@ -17,12 +21,26 @@ class FileRepository implements FileRepositoryInterface
     public function __construct(
         File $fileModel,
         MediaService $mediaService,
-        FileStructureService $fileStructureService
+        FileStructureService $fileStructureService,
     )
     {
         $this->fileModel = $fileModel;
         $this->mediaService = $mediaService;
         $this->fileStructureService = $fileStructureService;
+    }
+
+    public function createFile(array $data)
+    {
+        return $this->fileModel->create($data);
+    }
+
+    /**
+     * @throws FileIsTooBig
+     * @throws FileDoesNotExist
+     */
+    public function addAssociateMedia(File $fileModel, UploadedFile $uploadedFile): Media
+    {
+        return $fileModel->addMedia($uploadedFile)->toMediaCollection('file');
     }
 
     public function getFileById(int $fileId): File|Builder|array|Collection
@@ -41,7 +59,7 @@ class FileRepository implements FileRepositoryInterface
         $mediaFiles = $this->mediaService->getMediaByModelIds($fileIds);
         $thumbUrls = $this->mediaService->getThumbUrls($mediaFiles);
 
-        return $this->fileStructureService->structureData($files, $mediaFiles, $thumbUrls);
+        return $this->fileStructureService->mapStructuredData($files, $mediaFiles, $thumbUrls);
     }
 
     public function deleteFilesByIds(array $fileIds): void
