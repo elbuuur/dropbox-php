@@ -4,11 +4,18 @@ namespace App\Modules\File\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Response;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Modules\File\Services\MediaService;
 
 class DownloadController extends Controller
 {
+    private MediaService $mediaService;
+
+    public function __construct(MediaService $mediaService)
+    {
+        $this->mediaService = $mediaService;
+    }
+
     /**
      * Download file by uuid Media model
      *
@@ -36,7 +43,7 @@ class DownloadController extends Controller
      */
     public function downloadFile($mediaUuid): Response|BinaryFileResponse
     {
-        $media = Media::where('uuid', $mediaUuid)->first();
+        $media = $this->mediaService->getMediaByUuid($mediaUuid);
         $pathToFile = storage_path('app' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $media->id . DIRECTORY_SEPARATOR . $media->file_name);
 
         return Response::download($pathToFile);

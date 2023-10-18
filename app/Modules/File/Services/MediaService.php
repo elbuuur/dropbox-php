@@ -2,7 +2,6 @@
 
 namespace App\Modules\File\Services;
 
-use App\Modules\File\Models\File;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaService
@@ -14,15 +13,31 @@ class MediaService
         $this->media = $media;
     }
 
-
-    public function getMediaByModelIds($fileIds)
+    /**
+     * @param $fileIds
+     * @return mixed
+     */
+    public function getMediaByModelIds($fileIds): mixed
     {
         return $this->media
             ->whereIn('model_id', $fileIds)
             ->get();
     }
 
-    public function getThumbUrls($media)
+    /**
+     * @param string $uuid
+     * @return Media
+     */
+    public function getMediaByUuid(string $uuid): Media
+    {
+        return $this->media->where('uuid', $uuid)->first();
+    }
+
+    /**
+     * @param $media
+     * @return mixed
+     */
+    public function getThumbUrls($media): mixed
     {
         return $media->map(function ($media) {
             return $media->getUrl('thumb');
@@ -38,6 +53,11 @@ class MediaService
         return $this->media->where('model_id', $fileId)->first()['size'];
     }
 
+    /**
+     * @param Media $media
+     * @param string $fileName
+     * @return Media
+     */
     public function updateMediaName(Media $media, string $fileName): Media
     {
         $media->file_name = $fileName . '.' . $media->extension;
