@@ -37,4 +37,13 @@ class MediaService
     {
         return $this->media->where('model_id', $fileId)->first()['size'];
     }
+
+    public function updateMediaName(Media $media, string $fileName): Media
+    {
+        $media->file_name = $fileName . '.' . $media->extension;
+        $media->name = $fileName;
+        $media->save();
+
+        return $media;
+    }
 }

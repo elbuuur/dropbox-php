@@ -71,7 +71,7 @@ class FileUploadService
 
         $media = $this->fileRepository->addAssociateMedia($fileModel, $file);
 
-        $formattedFile = $this->fileStructureService->structureUploadedData($fileModel, $media);
+        $formattedFile = $this->fileStructureService->structureData($fileModel, $media);
 
         $this->fileCacheService->putFileCache($formattedFile, $fileModel->id);
 

@@ -34,7 +34,7 @@ class FileStructureService
         return $combined;
     }
 
-    public function structureUploadedData(File $file, Media $media): array
+    public function structureData(File $file, Media $media): array
     {
         $data = [
             'file_name' => $media['file_name'],
