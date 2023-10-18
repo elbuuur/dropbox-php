@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Modules\File\Services\FileCacheService;
+use App\Modules\File\Repositories\FileRepositoryInterface;
 
 class HomeController extends Controller
 {
     private FileCacheService $fileCacheService;
+    private FileRepositoryInterface $fileRepository;
 
-    public function __construct(FileCacheService $fileCacheService)
+    public function __construct(FileCacheService $fileCacheService, FileRepositoryInterface $fileRepository)
     {
         $this->fileCacheService = $fileCacheService;
+        $this->fileRepository = $fileRepository;
     }
 
 
@@ -79,14 +82,8 @@ class HomeController extends Controller
     {
         $user = $request->user();
         $folders = $user->folder;
-        $filesModel = $user->file()->where('folder_id', null)->get();
-
-        $files = [];
-
-        foreach ($filesModel as $file) {
-            $formattedFile = $this->fileCacheService->rememberFileCache($file);
-            $files[] = $formattedFile;
-        }
+        $filesIds = $this->fileRepository->getFilesIdWithoutFolder($user);
+        $files = $this->fileCacheService->loadFilesFromCacheOrDB($filesIds);
 
         return response()->json([
             'status' => 'success',

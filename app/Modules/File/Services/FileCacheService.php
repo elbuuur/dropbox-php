@@ -4,6 +4,7 @@ namespace App\Modules\File\Services;
 
 use App\Http\Controllers\Traits\FileStructureTrait;
 use App\Modules\File\Models\File;
+use App\Modules\File\Services\FileInformationService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -14,14 +15,16 @@ class FileCacheService
     use FileStructureTrait;
 
     private FileRepositoryInterface $fileRepository;
+    private FileInformationService $fileInformationService;
     private string $cacheFileTag;
     private string $cacheFileKey;
     private int $cacheFileTime;
     private string $cacheTrashTag;
 
-    public function __construct(FileRepositoryInterface $fileRepository)
+    public function __construct(FileRepositoryInterface $fileRepository, FileInformationService $fileInformationService)
     {
         $this->fileRepository = $fileRepository;
+        $this->fileInformationService = $fileInformationService;
 
         $this->cacheFileTag = config('constants.FILE_CACHE_TAG');
         $this->cacheFileKey = config('constants.FILE_CACHE_KEY');
@@ -64,15 +67,6 @@ class FileCacheService
         }
     }
 
-
-    public function rememberFileCache(int $fileId): File
-    {
-        return Cache::tags($this->cacheFileTag)->remember($this->cacheFileKey . $fileId, now()->addMinute($this->cacheFileTime), function () use ($fileId) {
-            return $this->fileRepository->getFileById($fileId);
-        });
-    }
-
-
     public function invalidateFileCache($fileId): void
     {
         Cache::tags($this->cacheFileTag)->forget($this->cacheFileKey . $fileId);
@@ -100,7 +94,7 @@ class FileCacheService
         }
 
         if ($uncachedFileIds) {
-            $uncachedFiles = $this->fileRepository->getFilesAndMediaInfo($uncachedFileIds);
+            $uncachedFiles = $this->fileInformationService->getFilesAndMediaInfo($uncachedFileIds);
 
             foreach ($uncachedFiles as $uncachedFile) {
                 $this->putFileCache($uncachedFile, $uncachedFile['id']);

@@ -3,6 +3,7 @@
 namespace App\Modules\File\Repositories;
 
 use App\Modules\File\Models\File;
+use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\File\Services\MediaService;
@@ -48,18 +49,9 @@ class FileRepository implements FileRepositoryInterface
         return $this->fileModel->with('media')->find($fileId);
     }
 
-    private function getFilesByIds($fileIds)
+    public function getFilesByIds($fileIds)
     {
         return $this->fileModel->whereIn('id', $fileIds)->get();
-    }
-
-    public function getFilesAndMediaInfo($fileIds): array
-    {
-        $files = $this->getFilesByIds($fileIds);
-        $mediaFiles = $this->mediaService->getMediaByModelIds($fileIds);
-        $thumbUrls = $this->mediaService->getThumbUrls($mediaFiles);
-
-        return $this->fileStructureService->mapStructuredData($files, $mediaFiles, $thumbUrls);
     }
 
     public function deleteFilesByIds(array $fileIds): void
@@ -83,5 +75,13 @@ class FileRepository implements FileRepositoryInterface
     public function deleteFile(File $file)
     {
         return $file->delete();
+    }
+
+    public function getFilesIdWithoutFolder(User $user): array
+    {
+        return $user->file()
+                    ->where('folder_id', null)
+                    ->pluck('id')
+                    ->toArray();
     }
 }

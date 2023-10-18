@@ -3,8 +3,6 @@
 namespace App\Modules\Folder\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Traits\FileStructureTrait;
-use App\Http\Controllers\Traits\FolderTrait;
 use App\Modules\Folder\Requests\FolderRequest;
 use App\Modules\User\Services\UserMemoryLimitService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,8 +14,6 @@ use App\Modules\File\Repositories\FileRepositoryInterface;
 
 class FolderController extends Controller
 {
-    use FileStructureTrait, FolderTrait;
-
     private FolderRepositoryInterface $folderRepository;
     private UserMemoryLimitService $userMemoryLimitService;
     private FileCacheService $fileCacheService;
