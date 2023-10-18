@@ -17,7 +17,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "17|aHXzqiJWZ760rvKuRUiCF2UqLrPvlKtl5cGUkcOM",
+									"value": "111|ap24PEzHN7iLwELJZ2jl0nPEyNRZvfCQ9FAUcR8j",
 									"type": "string"
 								}
 							]
@@ -35,7 +35,7 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "http://localhost/api/folder/5",
+							"raw": "http://localhost/api/folder/19",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -43,7 +43,7 @@
 							"path": [
 								"api",
 								"folder",
-								"5"
+								"19"
 							]
 						}
 					},
@@ -149,7 +149,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "28|GVlBtNTe0fXXeoGoRoCl4KbCPToikSFouTpR8Hkh",
+									"value": "111|ap24PEzHN7iLwELJZ2jl0nPEyNRZvfCQ9FAUcR8j",
 									"type": "string"
 								}
 							]
@@ -168,7 +168,7 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "http://localhost/api/folder/15",
+							"raw": "http://localhost/api/folder/19",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -176,7 +176,7 @@
 							"path": [
 								"api",
 								"folder",
-								"15"
+								"19"
 							]
 						}
 					},
@@ -195,7 +195,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "28|GVlBtNTe0fXXeoGoRoCl4KbCPToikSFouTpR8Hkh",
+									"value": "111|ap24PEzHN7iLwELJZ2jl0nPEyNRZvfCQ9FAUcR8j",
 									"type": "string"
 								}
 							]
@@ -214,7 +214,10 @@
 								{
 									"key": "file[]",
 									"type": "file",
-									"src": []
+									"src": [
+										"/Users/mustafinailya/Downloads/sticker.webp",
+										"/Users/mustafinailya/Downloads/Serb - Meet Our Friendly Cat.pdf"
+									]
 								},
 								{
 									"key": "folder_id",
@@ -296,7 +299,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "11|qW0DFsjHpfAOToTbc9zKfGVU7USY3sTU7bWKmmsw",
+									"value": "111|ap24PEzHN7iLwELJZ2jl0nPEyNRZvfCQ9FAUcR8j",
 									"type": "string"
 								}
 							]
@@ -313,19 +316,26 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "file_name",
-									"value": "azazaz1.png",
-									"type": "text"
+									"key": "name",
+									"value": "azazaz1",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "folder_id",
-									"value": "5",
+									"value": "12",
 									"type": "text"
+								},
+								{
+									"key": "shelf_life",
+									"value": "5",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
 						"url": {
-							"raw": "http://localhost/api/file/47",
+							"raw": "http://localhost/api/file/80",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -333,7 +343,7 @@
 							"path": [
 								"api",
 								"file",
-								"47"
+								"80"
 							]
 						}
 					},
@@ -387,6 +397,45 @@
 			"item": [
 				{
 					"name": "Index Trash",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "28|GVlBtNTe0fXXeoGoRoCl4KbCPToikSFouTpR8Hkh",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost/api/trash",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"trash"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Index Trash Copy",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -605,7 +654,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Normal cat\",\n    \"email\": \"cat2@mail.ru\",\n    \"password\": \"12345678\"\n}",
+					"raw": "{\n    \"name\": \"Normal cat\",\n    \"email\": \"cat6@mail.ru\",\n    \"password\": \"12345678\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -656,7 +705,7 @@
 					"formdata": [
 						{
 							"key": "email",
-							"value": "cat2@mail.ru",
+							"value": "nevusik@mail.ru",
 							"type": "text"
 						},
 						{
@@ -667,11 +716,12 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost/api/login",
+					"raw": "http://localhost:80/api/login",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
+					"port": "80",
 					"path": [
 						"api",
 						"login"
@@ -692,7 +742,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "8|yYqOOYiGZ9kz4VifZDAQKhz23KuOPry7TeaMPOaw",
+							"value": "105|krYG1btcFuKrPwadGIvgK7AFJy0xYzPbfpsXlAYH",
 							"type": "string"
 						}
 					]
@@ -731,7 +781,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "15|RvYT7sPJ6fOVe1i3jBVbvE2oEM9TMVcxoNau2It8",
+							"value": "106|O52HSZxSE5fZ9mYX7sSIzKjhFhJzY73wb837SZcm",
 							"type": "string"
 						}
 					]

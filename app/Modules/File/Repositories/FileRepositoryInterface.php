@@ -14,4 +14,6 @@ interface FileRepositoryInterface
     public function deleteFilesByIds(array $fileIds);
     public function createFile(array $data);
     public function addAssociateMedia(File $fileModel, UploadedFile $uploadedFile): Media;
+    public function updateFile(File $file, int|null $folderId, string|null $shelfLife);
+    public function deleteFile(File $file);
 }

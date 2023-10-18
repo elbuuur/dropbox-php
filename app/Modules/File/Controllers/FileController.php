@@ -3,7 +3,6 @@
 namespace App\Modules\File\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Traits\FileStructureTrait;
 use App\Http\Requests\FileRequest;
 use App\Http\Requests\UploadFileRequest;
 use App\Modules\File\Models\File;
@@ -13,23 +12,27 @@ use Illuminate\Http\JsonResponse;
 use App\Modules\File\Repositories\FileRepositoryInterface;
 use App\Modules\Folder\Repositories\FolderRepositoryInterface;
 use App\Modules\File\Services\FileUploadService;
+use App\Modules\File\Services\MediaService;
+use App\Modules\File\Services\FileStructureService;
 
 class FileController extends Controller
 {
-    use FileUploadTrait, FileStructureTrait;
-
     private UserMemoryLimitService $userMemoryLimitService;
     private FileCacheService $fileCacheService;
     private FileRepositoryInterface $fileRepository;
     private FolderRepositoryInterface $folderRepository;
     private FileUploadService $fileUploadService;
+    private FileStructureService $fileStructureService;
+    private MediaService $mediaService;
 
     public function __construct(
         UserMemoryLimitService $userMemoryLimitService,
         FileCacheService $fileCacheService,
         FileRepositoryInterface $fileRepository,
         FolderRepositoryInterface $folderRepository,
-        FileUploadService $fileUploadService
+        FileUploadService $fileUploadService,
+        FileStructureService $fileStructureService,
+        MediaService $mediaService
     )
     {
         parent::__construct();
@@ -39,6 +42,8 @@ class FileController extends Controller
         $this->fileRepository = $fileRepository;
         $this->folderRepository = $folderRepository;
         $this->fileUploadService = $fileUploadService;
+        $this->fileStructureService = $fileStructureService;
+        $this->mediaService = $mediaService;
     }
 
     /**
@@ -247,37 +252,32 @@ class FileController extends Controller
     public function update(FileRequest $request, File $file): JsonResponse
     {
         // $request->name - file name without extension
-        $name = str_replace(" ", "_", $request->name);
+        $fileName = str_replace(" ", "_", $request->name);
+        $fileId = $file->id;
         $folderId = (int)$request->folder_id;
         $shelfLife = (int)$request->shelf_life;
+
         $media = $file->getMedia('file')->first();
 
-        if($name) {
-            $media->file_name = $name . '.' . $media->extension;
-            $media->name = $name;
-            $media->save();
+        if(!empty($fileName)) {
+            $updatedMedia = $this->mediaService->updateMediaName($media, $fileName);
+            $media = $updatedMedia;
         }
 
-        if($folderId) {
-            $file->folder_id = $folderId;
-            $file->save();
+        if ($folderId || $shelfLife || ($folderId && $shelfLife)) {
+            $this->fileRepository->updateFile($file, $folderId, $shelfLife);
         }
 
-        if($shelfLife) {
-            $file->shelf_life = $shelfLife < 0 ? NULL : now()->addDays($shelfLife)->toDateString();
-            $file->save();
-        }
+        $formattedFile = $this->fileStructureService->structureData($file, $media);
 
-        $formattedFile = $this->fileFormatData($file, $media);
-
-        $this->fileCacheService->putFileCache($formattedFile, $file->id);
+        $this->fileCacheService->putFileCache($formattedFile, $fileId);
 
         return response()->json([
             'status' => 'success',
             'data' => [
                 'file' => $formattedFile
             ]
-        ], 200);
+        ]);
     }
 
     /**
@@ -323,7 +323,7 @@ class FileController extends Controller
      */
     public function destroy(File $file): JsonResponse
     {
-        $file->delete();
+        $file = $this->fileRepository->deleteFile($file);
 
         $this->userMemoryLimitService->updateLimitAfterDelete([$file]);
 

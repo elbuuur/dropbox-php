@@ -66,4 +66,22 @@ class FileRepository implements FileRepositoryInterface
     {
         $this->fileModel->destroy($fileIds);
     }
+
+    public function updateFile(File $file, int|null $folderId, string|null $shelfLife)
+    {
+        if($folderId) {
+            $file->folder_id = $folderId;
+        }
+
+        if($shelfLife) {
+            $file->shelf_life = $shelfLife < 0 ? NULL : now()->addDays($shelfLife)->toDateString();
+        }
+
+        $file->save();
+    }
+
+    public function deleteFile(File $file)
+    {
+        return $file->delete();
+    }
 }

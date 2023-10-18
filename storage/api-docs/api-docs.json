@@ -5,376 +5,6 @@
         "version": "1.0.0"
     },
     "paths": {
-        "download/{uuid}": {
-            "get": {
-                "tags": [
-                    "File"
-                ],
-                "summary": "Download file",
-                "description": "Send bearer token, media uuid",
-                "operationId": "a81c7354727601aaf23e2355a82ea545",
-                "parameters": [
-                    {
-                        "name": "uuid",
-                        "in": "path",
-                        "description": "uuid",
-                        "required": true,
-                        "example": "4ea31e34-e0cd-4aea-b489-043470f8c4e5"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "File"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/file/upload": {
-            "post": {
-                "tags": [
-                    "File"
-                ],
-                "summary": "Upload multiple files",
-                "description": "Send bearer token, file storage time in days, folder id and file (s)",
-                "operationId": "5c75b5747cfc41d9df3f220a245753b4",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "properties": {
-                                    "folder_id": {
-                                        "type": "string",
-                                        "nullable": true
-                                    },
-                                    "shelf_life": {
-                                        "type": "integer",
-                                        "nullable": true
-                                    },
-                                    "file": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string",
-                                            "format": "binary"
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Uploaded file(s)",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "files": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "file_name": {
-                                                                "type": "string",
-                                                                "example": "IMG_0514.jpg"
-                                                            },
-                                                            "name": {
-                                                                "type": "string",
-                                                                "example": "IMG_0514"
-                                                            },
-                                                            "id": {
-                                                                "type": "integer",
-                                                                "example": 36
-                                                            },
-                                                            "thumb": {
-                                                                "type": "string",
-                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
-                                                            },
-                                                            "uuid": {
-                                                                "type": "string",
-                                                                "example": "b28b6620-f3ed-11ed-8030-bb9a329c1263"
-                                                            },
-                                                            "extension": {
-                                                                "type": "string",
-                                                                "example": "JPG"
-                                                            },
-                                                            "size": {
-                                                                "type": "integer",
-                                                                "example": 5199684
-                                                            },
-                                                            "media_id": {
-                                                                "type": "integer",
-                                                                "example": 12
-                                                            },
-                                                            "folder_id": {
-                                                                "type": "integer",
-                                                                "example": 4
-                                                            },
-                                                            "shelf_life": {
-                                                                "type": "string",
-                                                                "format": "date"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validate error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation errors"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/file/{id}": {
-            "put": {
-                "tags": [
-                    "File"
-                ],
-                "summary": "Update file",
-                "description": "Send bearer token, file id and file name without extension",
-                "operationId": "dad73b25235ba92cd6575cb4abde0ad4",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "File id",
-                        "required": true,
-                        "example": "30"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/x-www-form-urlencoded": {
-                            "schema": {
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "summer"
-                                    },
-                                    "folder_id": {
-                                        "type": "integer",
-                                        "example": 4,
-                                        "nullable": true
-                                    },
-                                    "shelf_life": {
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Update File",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "file": {
-                                                    "properties": {
-                                                        "file_name": {
-                                                            "type": "string",
-                                                            "example": "IMG_0514.jpg"
-                                                        },
-                                                        "name": {
-                                                            "type": "string",
-                                                            "example": "IMG_0514"
-                                                        },
-                                                        "uuid": {
-                                                            "type": "string",
-                                                            "example": "b28b6620-f3ed-11ed-8030-bb9a329c1263"
-                                                        },
-                                                        "id": {
-                                                            "type": "integer",
-                                                            "example": 36
-                                                        },
-                                                        "extension": {
-                                                            "type": "string",
-                                                            "example": "JPG"
-                                                        },
-                                                        "thumb": {
-                                                            "type": "string",
-                                                            "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
-                                                        },
-                                                        "size": {
-                                                            "type": "integer",
-                                                            "example": 5199684
-                                                        },
-                                                        "media_id": {
-                                                            "type": "integer",
-                                                            "example": 12
-                                                        },
-                                                        "folder_id": {
-                                                            "type": "integer",
-                                                            "example": 4
-                                                        },
-                                                        "shelf_life": {
-                                                            "type": "string",
-                                                            "format": "date"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validate error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation errors"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "File"
-                ],
-                "summary": "Delete file",
-                "description": "Send bearer token and file id",
-                "operationId": "32379473b7a315a5d222725584d1345e",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "File id",
-                        "required": true,
-                        "example": "39"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Delete File",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "file": {
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "integer",
-                                                            "example": 36
-                                                        },
-                                                        "folder_id": {
-                                                            "type": "integer",
-                                                            "example": 4
-                                                        },
-                                                        "created_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        },
-                                                        "updated_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        },
-                                                        "deleted_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
         "/api/home": {
             "post": {
                 "tags": [
@@ -813,6 +443,376 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Something went wrong..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "download/{uuid}": {
+            "get": {
+                "tags": [
+                    "File"
+                ],
+                "summary": "Download file",
+                "description": "Send bearer token, media uuid",
+                "operationId": "5b4b64bf82925d3b46758b10f87b4cc9",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "uuid",
+                        "required": true,
+                        "example": "4ea31e34-e0cd-4aea-b489-043470f8c4e5"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/file/upload": {
+            "post": {
+                "tags": [
+                    "File"
+                ],
+                "summary": "Upload multiple files",
+                "description": "Send bearer token, file storage time in days, folder id and file (s)",
+                "operationId": "a730283e22095278802915bc7a1e8dcf",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "folder_id": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "shelf_life": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "file": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Uploaded file(s)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "files": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "file_name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514.jpg"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 36
+                                                            },
+                                                            "thumb": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
+                                                            },
+                                                            "uuid": {
+                                                                "type": "string",
+                                                                "example": "b28b6620-f3ed-11ed-8030-bb9a329c1263"
+                                                            },
+                                                            "extension": {
+                                                                "type": "string",
+                                                                "example": "JPG"
+                                                            },
+                                                            "size": {
+                                                                "type": "integer",
+                                                                "example": 5199684
+                                                            },
+                                                            "media_id": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "folder_id": {
+                                                                "type": "integer",
+                                                                "example": 4
+                                                            },
+                                                            "shelf_life": {
+                                                                "type": "string",
+                                                                "format": "date"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validate error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation errors"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/file/{id}": {
+            "put": {
+                "tags": [
+                    "File"
+                ],
+                "summary": "Update file",
+                "description": "Send bearer token, file id and file name without extension",
+                "operationId": "de8974274913b6468c1a6eccfe1778e2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "File id",
+                        "required": true,
+                        "example": "30"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "summer"
+                                    },
+                                    "folder_id": {
+                                        "type": "integer",
+                                        "example": 4,
+                                        "nullable": true
+                                    },
+                                    "shelf_life": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update File",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "file": {
+                                                    "properties": {
+                                                        "file_name": {
+                                                            "type": "string",
+                                                            "example": "IMG_0514.jpg"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "IMG_0514"
+                                                        },
+                                                        "uuid": {
+                                                            "type": "string",
+                                                            "example": "b28b6620-f3ed-11ed-8030-bb9a329c1263"
+                                                        },
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 36
+                                                        },
+                                                        "extension": {
+                                                            "type": "string",
+                                                            "example": "JPG"
+                                                        },
+                                                        "thumb": {
+                                                            "type": "string",
+                                                            "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
+                                                        },
+                                                        "size": {
+                                                            "type": "integer",
+                                                            "example": 5199684
+                                                        },
+                                                        "media_id": {
+                                                            "type": "integer",
+                                                            "example": 12
+                                                        },
+                                                        "folder_id": {
+                                                            "type": "integer",
+                                                            "example": 4
+                                                        },
+                                                        "shelf_life": {
+                                                            "type": "string",
+                                                            "format": "date"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validate error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation errors"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "File"
+                ],
+                "summary": "Delete file",
+                "description": "Send bearer token and file id",
+                "operationId": "ee723b1fef352dc5e19f5afc3aa002f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "File id",
+                        "required": true,
+                        "example": "39"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete File",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "file": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 36
+                                                        },
+                                                        "folder_id": {
+                                                            "type": "integer",
+                                                            "example": 4
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "updated_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "deleted_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
