@@ -45,11 +45,14 @@ class UserMemoryLimitService
 
         $filesSize = 0;
 
+
         foreach ($fileIds as $fileId) {
             $cachedFile = $this->fileCacheService->getFileCache($fileId);
 
             if($cachedFile) {
                 $filesSize += $cachedFile['size'];
+
+                $this->fileCacheService->addTrashTagForFile($cachedFile);
 
                 continue;
             }

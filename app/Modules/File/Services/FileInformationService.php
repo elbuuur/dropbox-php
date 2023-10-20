@@ -21,9 +21,14 @@ class FileInformationService
         $this->fileStructureService = $fileStructureService;
     }
 
-    public function getFilesAndMediaInfo($fileIds): array
+    public function getFilesAndMediaInfo($fileIds, $deletedFiles = false): array
     {
-        $files = $this->fileRepository->getFilesByIds($fileIds);
+        if ($deletedFiles) {
+            $files = $this->fileRepository->getDeletedFilesByIds($fileIds);
+        } else {
+            $files = $this->fileRepository->getFilesByIds($fileIds);
+        }
+
         $mediaFiles = $this->mediaService->getMediaByModelIds($fileIds);
         $thumbUrls = $this->mediaService->getThumbUrls($mediaFiles);
 

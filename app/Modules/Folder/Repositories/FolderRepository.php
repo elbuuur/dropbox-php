@@ -49,4 +49,26 @@ class FolderRepository implements FolderRepositoryInterface
                     ->where('created_by_id', $createdById)
                     ->exists();
     }
+
+    public function getDeletedFolders($user): array
+    {
+        return $user->folder()->onlyTrashed()->get()->toArray();
+    }
+
+    public function getDeletedFolderById(int $folderId)
+    {
+        return $this->folderModel->withTrashed()->find($folderId);
+    }
+
+    public function getDeletedFoldersId($user): array
+    {
+        return $user->folder()->onlyTrashed()->pluck('id')->toArray();
+    }
+
+    public function forceDeleteByIds(array $folderIds): void
+    {
+        $this->folderModel
+             ->whereIn('id', $folderIds)
+             ->forceDelete();
+    }
 }

@@ -15,5 +15,9 @@ interface FileRepositoryInterface
     public function addAssociateMedia(File $fileModel, UploadedFile $uploadedFile): Media;
     public function updateFile(File $file, int|null $folderId, string|null $shelfLife);
     public function deleteFile(File $file);
-    public function getFilesIdWithoutFolder(User $user): array;
+    public function getUnattachedFilesId(User $user): array;
+    public function getDeletedUnattachedFilesId($user): array;
+    public function getDeletedFilesByIds(array $fileIds);
+    public function getDeletedFilesByFolder($folder);
+    public function forceDeleteByIds(array $fileIds);
 }

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\FilesystemManagement\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Modules\File\Repositories\FileRepositoryInterface;
+use App\Modules\File\Services\FileCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\File\Services\FileCacheService;
-use App\Modules\File\Repositories\FileRepositoryInterface;
 
 class HomeController extends Controller
 {
@@ -82,7 +83,7 @@ class HomeController extends Controller
     {
         $user = $request->user();
         $folders = $user->folder;
-        $filesIds = $this->fileRepository->getFilesIdWithoutFolder($user);
+        $filesIds = $this->fileRepository->getUnattachedFilesId($user);
         $files = $this->fileCacheService->loadFilesFromCacheOrDB($filesIds);
 
         return response()->json([

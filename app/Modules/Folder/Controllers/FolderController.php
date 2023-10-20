@@ -11,6 +11,7 @@ use App\Modules\Folder\Repositories\FolderRepositoryInterface;
 use App\Modules\File\Services\FileCacheService;
 use App\Modules\Folder\Resources\FolderResource;
 use App\Modules\File\Repositories\FileRepositoryInterface;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 
 class FolderController extends Controller
 {
@@ -18,12 +19,14 @@ class FolderController extends Controller
     private UserMemoryLimitService $userMemoryLimitService;
     private FileCacheService $fileCacheService;
     private FileRepositoryInterface $fileRepository;
+    private UserRepositoryInterface $userRepository;
 
     public function __construct(
         FolderRepositoryInterface $folderRepository,
         UserMemoryLimitService $userMemoryLimitService,
         FileCacheService $fileCacheService,
-        FileRepositoryInterface $fileRepository
+        FileRepositoryInterface $fileRepository,
+        UserRepositoryInterface $userRepository
     )
     {
         parent::__construct();
@@ -32,6 +35,7 @@ class FolderController extends Controller
         $this->userMemoryLimitService = $userMemoryLimitService;
         $this->fileCacheService = $fileCacheService;
         $this->fileRepository = $fileRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -318,11 +322,27 @@ class FolderController extends Controller
     public function destroy(string $id): JsonResponse
     {
         try {
+            $user = auth()->user();
             $folder = $this->folderRepository->getFolderWithFiles($id);
-
             $fileIds = $folder->files->pluck('id')->toArray();
 
             $this->userMemoryLimitService->updateLimitAfterDelete($fileIds);
+//            $filesSize = 0;
+//
+//            foreach ($fileIds as $fileId) {
+//                $cachedFile = $this->fileCacheService->getFileCache($fileId);
+//
+//                if($cachedFile) {
+//                    $filesSize += $cachedFile['size'];
+//
+//                    continue;
+//                }
+//
+//                $fileSize = $this->mediaService->getSizeByFileId($fileId);
+//                $filesSize += $fileSize;
+//            }
+//
+//            $this->userRepository->decreaseUserUploadLimit($user, $filesSize);
 
             $this->fileRepository->deleteFilesByIds($fileIds);
 
