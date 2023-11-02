@@ -54,6 +54,13 @@ class FileCacheService
                     ->put($fileCacheKey, $file, now()->addMinute($this->cacheFileTime));
     }
 
+    public function deleteFileTagForFiles(array $filesId): void
+    {
+        foreach ($filesId as $fileId) {
+            $this->invalidateFileTagCache($fileId);
+        }
+    }
+
     public function rememberTrashFileCache(array $file): array
     {
         return Cache::tags([$this->cacheFileTag, $this->cacheTrashTag])->remember($this->cacheFileKey . $file['id'], now()->addMinute($this->cacheFileTime), function () use ($file) {
@@ -83,11 +90,15 @@ class FileCacheService
         }
     }
 
-    public function invalidateFileCache($fileId): void
+    public function invalidateFileTagCache($fileId): void
     {
         Cache::tags($this->cacheFileTag)->forget($this->cacheFileKey . $fileId);
     }
 
+    public function invalidateTrashTagCache($fileId): void
+    {
+        Cache::tags($this->cacheTrashTag)->forget($this->cacheFileKey . $fileId);
+    }
 
     public function getFileCache($fileId)
     {

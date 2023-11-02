@@ -20,4 +20,5 @@ interface FileRepositoryInterface
     public function getDeletedFilesByIds(array $fileIds);
     public function getDeletedFilesByFolder($folder);
     public function forceDeleteByIds(array $fileIds);
+    public function restoreFilesByIds(array $fileIds);
 }

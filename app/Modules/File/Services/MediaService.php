@@ -54,6 +54,15 @@ class MediaService
     }
 
     /**
+     * @param array $fileIds
+     * @return mixed
+     */
+    public function getMediaByFileIds(array $fileIds)
+    {
+        return $this->media->whereIn('model_id', $fileIds)->get();
+    }
+
+    /**
      * @param Media $media
      * @param string $fileName
      * @return Media

@@ -103,4 +103,15 @@ class FileRepository implements FileRepositoryInterface
              ->whereIn('id', $fileIds)
              ->forceDelete();
     }
+
+    public function restoreFilesByIds(array $fileIds)
+    {
+        $this->resetShelfLifeByIds($fileIds);
+        $this->fileModel->withTrashed()->whereIn('id', $fileIds)->restore();
+    }
+
+    private function resetShelfLifeByIds(array $fileIds)
+    {
+        $this->fileModel->withTrashed()->whereIn('id', $fileIds)->update(['shelf_life' => NULL]);
+    }
 }

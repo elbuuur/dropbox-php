@@ -187,7 +187,7 @@ class FolderController extends Controller
 
             $files = $this->fileCacheService->loadFilesFromCacheOrDB($fileIds);
 
-            $folderSize = collect($files)->sum('size');;
+            $folderSize = collect($files)->sum('size');
 
             $folder = new FolderResource($folderModel, $folderSize);
 
@@ -322,29 +322,13 @@ class FolderController extends Controller
     public function destroy(string $id): JsonResponse
     {
         try {
-            $user = auth()->user();
             $folder = $this->folderRepository->getFolderWithFiles($id);
             $fileIds = $folder->files->pluck('id')->toArray();
 
             $this->userMemoryLimitService->updateLimitAfterDelete($fileIds);
-//            $filesSize = 0;
-//
-//            foreach ($fileIds as $fileId) {
-//                $cachedFile = $this->fileCacheService->getFileCache($fileId);
-//
-//                if($cachedFile) {
-//                    $filesSize += $cachedFile['size'];
-//
-//                    continue;
-//                }
-//
-//                $fileSize = $this->mediaService->getSizeByFileId($fileId);
-//                $filesSize += $fileSize;
-//            }
-//
-//            $this->userRepository->decreaseUserUploadLimit($user, $filesSize);
 
             $this->fileRepository->deleteFilesByIds($fileIds);
+            $this->fileCacheService->deleteFileTagForFiles($fileIds);
 
             $folder->delete();
 
