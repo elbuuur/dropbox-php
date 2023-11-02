@@ -1,17 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\FilesystemManagement\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\FileStructureTrait;
-use App\Http\Requests\TrashRequest;
 use App\Modules\File\Models\File;
+use App\Modules\File\Services\FileCacheService;
+use App\Modules\FilesystemManagement\Requests\TrashRequest;
 use App\Modules\Folder\Models\Folder;
 use App\Modules\User\Services\UserMemoryLimitService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Modules\File\Services\FileCacheService;
+use App\Modules\Folder\Repositories\FolderRepositoryInterface;
+use App\Modules\File\Repositories\FileRepositoryInterface;
+use App\Modules\File\Services\MediaService;
 
 class TrashController extends Controller
 {
@@ -21,17 +25,26 @@ class TrashController extends Controller
     private FileCacheService $fileCacheService;
     private File $fileModel;
     private Folder $folderModel;
+    private FolderRepositoryInterface $folderRepository;
+    private FileRepositoryInterface $fileRepository;
+    private MediaService $mediaService;
     private int $trashLifespan;
 
     public function __construct(
         UserMemoryLimitService $userMemoryLimitService,
-        FileCacheService $fileCacheService
+        FileCacheService $fileCacheService,
+        FolderRepositoryInterface $folderRepository,
+        FileRepositoryInterface $fileRepository,
+        MediaService $mediaService
     )
     {
         parent::__construct();
 
         $this->userMemoryLimitService = $userMemoryLimitService;
         $this->fileCacheService = $fileCacheService;
+        $this->folderRepository = $folderRepository;
+        $this->fileRepository = $fileRepository;
+        $this->mediaService = $mediaService;
 
         $this->trashLifespan = config('constants.TRASH_LIFESPAN');
         $this->fileModel = new File();
@@ -92,21 +105,10 @@ class TrashController extends Controller
     public function index(TrashRequest $request): JsonResponse
     {
         $user = $request->user();
-        $folders = $user->folder()->onlyTrashed()->get()->toArray();
-        $allFiles = $user->file()->onlyTrashed()->get()->toArray();
-        $files = [];
+        $folders = $this->folderRepository->getDeletedFolders($user);
+        $filesId = $this->fileRepository->getDeletedUnattachedFilesId($user);
 
-        $filteredFiles = array_filter($allFiles, function ($file) use ($folders) {
-            $folderId = $file['folder_id'];
-
-            return $folderId === null || !in_array($folderId, array_column($folders, 'id'));
-        });
-
-
-        foreach ($filteredFiles as $file) {
-            $formattedFile = $this->fileCacheService->rememberTrashFileCache($file);
-            $files[] = $formattedFile;
-        }
+        $files = $this->fileCacheService->loadFilesFromCacheOrDB($filesId, deletedFiles: true);
 
         return response()->json([
             'status' => 'success',
@@ -165,11 +167,12 @@ class TrashController extends Controller
             foreach ($request->all() as $type => $itemId){
                 switch ($type) {
                     case 'folder':
-                        $folder = $this->folderModel->withTrashed()->find($itemId);
-                        $files = $folder->files()->onlyTrashed()->get();
+                        $folder = $this->folderRepository->getDeletedFolderById($itemId);
+                        $files = $this->fileRepository->getDeletedFilesByFolder($folder);
 
                         if($files) {
                             foreach ($files as $file) {
+                                $this->fileCacheService->invalidateFileTagCache($file->id);
                                 $file->forceDelete();
                             }
                         }
@@ -178,9 +181,9 @@ class TrashController extends Controller
 
                         break;
                     case 'file':
-                        $file = $this->fileModel->withTrashed()->find($itemId);
+                        $file = $this->fileRepository->getDeletedFilesByIds([$itemId]);
 
-                        $this->fileCacheService->invalidateFileCache($itemId);
+                        $this->fileCacheService->invalidateFileTagCache($itemId);
 
                         $file->forceDelete();
 
@@ -238,18 +241,13 @@ class TrashController extends Controller
     {
         try {
             $user = $request->user();
-            $folderIds = $user->folder()->onlyTrashed()->pluck('id')->toArray();
-            $fileIds = $user->file()->onlyTrashed()->pluck('id')->toArray();
 
-            $this->folderModel
-                ->onlyTrashed()
-                ->whereIn('id', $folderIds)
-                ->forceDelete();
+            $folderIds = $this->folderRepository->getDeletedFoldersId($user);
+            $fileIds = $this->fileRepository->getDeletedUnattachedFilesId($user);
 
-            $this->fileModel
-                ->onlyTrashed()
-                ->whereIn('id', $fileIds)
-                ->forceDelete();
+            $this->folderRepository->forceDeleteByIds($folderIds);
+
+            $this->fileRepository->forceDeleteByIds($fileIds);
 
             $this->fileCacheService->deleteAllTrashFileCache();
 
@@ -315,23 +313,20 @@ class TrashController extends Controller
             foreach ($request->all() as $type => $itemId){
                 switch ($type) {
                     case 'folder':
-                        $folder = $this->folderModel->withTrashed()->find($itemId);
-                        $folderFilesId = $folder->files()->withTrashed()->pluck('id')->toArray();
+                        $folder = $this->folderRepository->getDeletedFolderById($itemId);
+                        $attachedFileIds = $this->fileRepository->getDeletedFilesByFolder($folder)->pluck('id')->toArray();
 
-                        $folderSize = 0;
+                        $filesMedia = $this->mediaService->getMediaByFileIds($attachedFileIds);
 
-                        foreach ($folderFilesId as $fileId) {
-                            $folderSize += Media::where('model_id', $fileId)->first()['size'];
-                        }
+                        $folderSize = collect($filesMedia)->sum('size');
 
                         if ($uploadLimit > $folderSize) {
 
-                            foreach ($folderFilesId as $fileId) {
-                                $this->fileCacheService->restoreTrashFileCache($fileId);
+                            foreach ($attachedFileIds as $fileId) {
+                                $this->fileCacheService->invalidateTrashTagCache($fileId);
                             }
 
-                            $this->fileModel->withTrashed()->whereIn('id', $folderFilesId)->update(['shelf_life' => NULL]);
-                            $this->fileModel->withTrashed()->whereIn('id', $folderFilesId)->restore();
+                            $this->fileRepository->restoreFilesByIds($attachedFileIds);
 
                             $this->userMemoryLimitService->updateLimitAfterUpload($folderSize);
 
@@ -342,15 +337,14 @@ class TrashController extends Controller
 
                         break;
                     case 'file':
-                        $fileSize = Media::where('model_id', $itemId)->first()['size'];
+                        $fileSize = $this->mediaService->getSizeByFileId($itemId);
 
                         if ($uploadLimit > $fileSize) {
-                            $this->fileModel->withTrashed()->find($itemId)->restore();
-                            $this->fileModel->withTrashed()->whereIn('id', $itemId)->update(['shelf_life' => NULL]);
+                            $this->fileRepository->restoreFilesByIds([$itemId]);
 
-                            $this->fileCacheService->restoreTrashFileCache($itemId);
-                            // проверить момента обновления лимита данных пользователя
-                            // в этом кейсе
+                            $this->fileCacheService->invalidateTrashTagCache($itemId);
+                            
+                            $this->userMemoryLimitService->updateLimitAfterUpload($fileSize);
                         } else {
                             throw new \Exception('Not enough free disk space');
                         }

@@ -3,17 +3,17 @@
 namespace App\Modules\File\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FileRequest;
-use App\Http\Requests\UploadFileRequest;
 use App\Modules\File\Models\File;
-use App\Modules\File\Services\FileCacheService;
-use App\Modules\User\Services\UserMemoryLimitService;
-use Illuminate\Http\JsonResponse;
 use App\Modules\File\Repositories\FileRepositoryInterface;
-use App\Modules\Folder\Repositories\FolderRepositoryInterface;
+use App\Modules\File\Requests\FileRequest;
+use App\Modules\File\Requests\UploadFileRequest;
+use App\Modules\File\Services\FileCacheService;
+use App\Modules\File\Services\FileStructureService;
 use App\Modules\File\Services\FileUploadService;
 use App\Modules\File\Services\MediaService;
-use App\Modules\File\Services\FileStructureService;
+use App\Modules\Folder\Repositories\FolderRepositoryInterface;
+use App\Modules\User\Services\UserMemoryLimitService;
+use Illuminate\Http\JsonResponse;
 
 class FileController extends Controller
 {

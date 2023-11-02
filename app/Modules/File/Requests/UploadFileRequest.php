@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Modules\File\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
 
 class UploadFileRequest extends FormRequest
 {

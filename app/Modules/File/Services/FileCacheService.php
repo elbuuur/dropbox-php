@@ -3,7 +3,6 @@
 namespace App\Modules\File\Services;
 
 use App\Http\Controllers\Traits\FileStructureTrait;
-use App\Modules\File\Models\File;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -14,14 +13,19 @@ class FileCacheService
     use FileStructureTrait;
 
     private FileRepositoryInterface $fileRepository;
+    private FileInformationService $fileInformationService;
     private string $cacheFileTag;
     private string $cacheFileKey;
     private int $cacheFileTime;
     private string $cacheTrashTag;
 
-    public function __construct(FileRepositoryInterface $fileRepository)
+    public function __construct(
+        FileRepositoryInterface $fileRepository,
+        FileInformationService $fileInformationService
+    )
     {
         $this->fileRepository = $fileRepository;
+        $this->fileInformationService = $fileInformationService;
 
         $this->cacheFileTag = config('constants.FILE_CACHE_TAG');
         $this->cacheFileKey = config('constants.FILE_CACHE_KEY');
@@ -30,11 +34,32 @@ class FileCacheService
     }
 
 
-    public function putFileCache($file, $fileId): void
+    public function putFileCache($file, $fileId, $deletedFile = false): void
     {
-        Cache::tags($this->cacheFileTag)->put($this->cacheFileKey . $fileId, $file, now()->addMinute($this->cacheFileTime));
+        $tags = [$this->cacheFileTag];
+
+        if ($deletedFile) {
+            $tags[] = $this->cacheTrashTag;
+        }
+
+        Cache::tags($tags)->put($this->cacheFileKey . $fileId, $file, now()->addMinute($this->cacheFileTime));
     }
 
+    public function addTrashTagForFile(array $file): void
+    {
+        $fileCacheKey = $this->cacheFileKey . $file['id'];
+
+        Cache::tags($this->cacheFileTag)->forget($fileCacheKey);
+        Cache::tags([$this->cacheFileTag, $this->cacheTrashTag])
+                    ->put($fileCacheKey, $file, now()->addMinute($this->cacheFileTime));
+    }
+
+    public function deleteFileTagForFiles(array $filesId): void
+    {
+        foreach ($filesId as $fileId) {
+            $this->invalidateFileTagCache($fileId);
+        }
+    }
 
     public function rememberTrashFileCache(array $file): array
     {
@@ -60,31 +85,27 @@ class FileCacheService
         if (Cache::tags($this->cacheFileTag)->get($this->cacheFileKey . $fileId)) {
             $currentTags = Cache::getTagsForKey($this->cacheFileKey . $fileId);
             $newTags = array_diff($currentTags, [$this->cacheTrashTag]);
+
             Cache::tags($currentTags)->replaceTags($newTags);
         }
     }
 
-
-    public function rememberFileCache(int $fileId): File
-    {
-        return Cache::tags($this->cacheFileTag)->remember($this->cacheFileKey . $fileId, now()->addMinute($this->cacheFileTime), function () use ($fileId) {
-            return $this->fileRepository->getFileById($fileId);
-        });
-    }
-
-
-    public function invalidateFileCache($fileId): void
+    public function invalidateFileTagCache($fileId): void
     {
         Cache::tags($this->cacheFileTag)->forget($this->cacheFileKey . $fileId);
     }
 
+    public function invalidateTrashTagCache($fileId): void
+    {
+        Cache::tags($this->cacheTrashTag)->forget($this->cacheFileKey . $fileId);
+    }
 
     public function getFileCache($fileId)
     {
         return Cache::tags($this->cacheFileTag)->get($this->cacheFileKey . $fileId);
     }
 
-    public function loadFilesFromCacheOrDB(Collection|array $fileIds): array
+    public function loadFilesFromCacheOrDB(Collection|array $fileIds, $deletedFiles = false): array
     {
         $files = [];
         $uncachedFileIds = [];
@@ -100,10 +121,10 @@ class FileCacheService
         }
 
         if ($uncachedFileIds) {
-            $uncachedFiles = $this->fileRepository->getFilesAndMediaInfo($uncachedFileIds);
+            $uncachedFiles = $this->fileInformationService->getFilesAndMediaInfo($uncachedFileIds, $deletedFiles);
 
             foreach ($uncachedFiles as $uncachedFile) {
-                $this->putFileCache($uncachedFile, $uncachedFile['id']);
+                $this->putFileCache($uncachedFile, $uncachedFile['id'], $deletedFiles);
             }
 
             $files = [...$files, ...$uncachedFiles];

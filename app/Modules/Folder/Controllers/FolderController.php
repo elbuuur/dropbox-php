@@ -3,8 +3,6 @@
 namespace App\Modules\Folder\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Traits\FileStructureTrait;
-use App\Http\Controllers\Traits\FolderTrait;
 use App\Modules\Folder\Requests\FolderRequest;
 use App\Modules\User\Services\UserMemoryLimitService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -13,21 +11,22 @@ use App\Modules\Folder\Repositories\FolderRepositoryInterface;
 use App\Modules\File\Services\FileCacheService;
 use App\Modules\Folder\Resources\FolderResource;
 use App\Modules\File\Repositories\FileRepositoryInterface;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 
 class FolderController extends Controller
 {
-    use FileStructureTrait, FolderTrait;
-
     private FolderRepositoryInterface $folderRepository;
     private UserMemoryLimitService $userMemoryLimitService;
     private FileCacheService $fileCacheService;
     private FileRepositoryInterface $fileRepository;
+    private UserRepositoryInterface $userRepository;
 
     public function __construct(
         FolderRepositoryInterface $folderRepository,
         UserMemoryLimitService $userMemoryLimitService,
         FileCacheService $fileCacheService,
-        FileRepositoryInterface $fileRepository
+        FileRepositoryInterface $fileRepository,
+        UserRepositoryInterface $userRepository
     )
     {
         parent::__construct();
@@ -36,6 +35,7 @@ class FolderController extends Controller
         $this->userMemoryLimitService = $userMemoryLimitService;
         $this->fileCacheService = $fileCacheService;
         $this->fileRepository = $fileRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -187,7 +187,7 @@ class FolderController extends Controller
 
             $files = $this->fileCacheService->loadFilesFromCacheOrDB($fileIds);
 
-            $folderSize = collect($files)->sum('size');;
+            $folderSize = collect($files)->sum('size');
 
             $folder = new FolderResource($folderModel, $folderSize);
 
@@ -323,12 +323,12 @@ class FolderController extends Controller
     {
         try {
             $folder = $this->folderRepository->getFolderWithFiles($id);
-
             $fileIds = $folder->files->pluck('id')->toArray();
 
             $this->userMemoryLimitService->updateLimitAfterDelete($fileIds);
 
             $this->fileRepository->deleteFilesByIds($fileIds);
+            $this->fileCacheService->deleteFileTagForFiles($fileIds);
 
             $folder->delete();
 

@@ -2,15 +2,8 @@
 
 namespace App\Modules\File\Services;
 
-use App\Http\Requests\UploadFileRequest;
-use App\Modules\File\Models\File;
-use App\Modules\File\Services\FileCacheService;
-use App\Modules\File\Services\FileStructureService;
-use App\Modules\Folder\Models\Folder;
-use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
-use Mockery\Exception;
 use App\Modules\File\Repositories\FileRepositoryInterface;
+use Illuminate\Http\UploadedFile;
 use Webpatser\Uuid\Uuid;
 
 class FileUploadService

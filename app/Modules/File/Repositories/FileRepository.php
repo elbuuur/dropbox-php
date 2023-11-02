@@ -3,10 +3,9 @@
 namespace App\Modules\File\Repositories;
 
 use App\Modules\File\Models\File;
+use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Modules\File\Services\MediaService;
-use App\Modules\File\Services\FileStructureService;
 use Illuminate\Http\UploadedFile;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
@@ -15,18 +14,10 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class FileRepository implements FileRepositoryInterface
 {
     private File $fileModel;
-    private MediaService $mediaService;
-    private FileStructureService $fileStructureService;
 
-    public function __construct(
-        File $fileModel,
-        MediaService $mediaService,
-        FileStructureService $fileStructureService,
-    )
+    public function __construct(File $fileModel)
     {
         $this->fileModel = $fileModel;
-        $this->mediaService = $mediaService;
-        $this->fileStructureService = $fileStructureService;
     }
 
     public function createFile(array $data)
@@ -48,18 +39,9 @@ class FileRepository implements FileRepositoryInterface
         return $this->fileModel->with('media')->find($fileId);
     }
 
-    private function getFilesByIds($fileIds)
+    public function getFilesByIds($fileIds): File
     {
         return $this->fileModel->whereIn('id', $fileIds)->get();
-    }
-
-    public function getFilesAndMediaInfo($fileIds): array
-    {
-        $files = $this->getFilesByIds($fileIds);
-        $mediaFiles = $this->mediaService->getMediaByModelIds($fileIds);
-        $thumbUrls = $this->mediaService->getThumbUrls($mediaFiles);
-
-        return $this->fileStructureService->mapStructuredData($files, $mediaFiles, $thumbUrls);
     }
 
     public function deleteFilesByIds(array $fileIds): void
@@ -83,5 +65,53 @@ class FileRepository implements FileRepositoryInterface
     public function deleteFile(File $file)
     {
         return $file->delete();
+    }
+
+    public function getUnattachedFilesId(User $user): array
+    {
+        return $user->file()
+                    ->where('folder_id', null)
+                    ->pluck('id')
+                    ->toArray();
+    }
+
+    public function getDeletedFilesByIds(array $fileIds)
+    {
+        return $this->fileModel
+                    ->onlyTrashed()
+                    ->whereIn('id', $fileIds)
+                    ->get();
+    }
+
+    public function getDeletedUnattachedFilesId($user): array
+    {
+        return $user->file()
+                    ->onlyTrashed()
+                    ->where('folder_id', null)
+                    ->pluck('id')
+                    ->toArray();
+    }
+
+    public function getDeletedFilesByFolder($folder)
+    {
+        return $folder->files()->onlyTrashed()->get();
+    }
+
+    public function forceDeleteByIds(array $fileIds): void
+    {
+        $this->fileModel
+             ->whereIn('id', $fileIds)
+             ->forceDelete();
+    }
+
+    public function restoreFilesByIds(array $fileIds)
+    {
+        $this->resetShelfLifeByIds($fileIds);
+        $this->fileModel->withTrashed()->whereIn('id', $fileIds)->restore();
+    }
+
+    private function resetShelfLifeByIds(array $fileIds)
+    {
+        $this->fileModel->withTrashed()->whereIn('id', $fileIds)->update(['shelf_life' => NULL]);
     }
 }

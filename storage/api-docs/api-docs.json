@@ -5,459 +5,6 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/home": {
-            "post": {
-                "tags": [
-                    "Root"
-                ],
-                "summary": "Structure from root",
-                "description": "Send bearer token",
-                "operationId": "7f5058287fd9887134c63bda9f4e422d",
-                "responses": {
-                    "200": {
-                        "description": "Structure from root",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "folder": {
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "integer",
-                                                            "example": 5
-                                                        },
-                                                        "folder_name": {
-                                                            "type": "string",
-                                                            "example": "Holidays"
-                                                        },
-                                                        "created_by_id": {
-                                                            "type": "integer",
-                                                            "example": 1
-                                                        },
-                                                        "created_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        },
-                                                        "updated_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "files": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "name": {
-                                                                "type": "string",
-                                                                "example": "IMG_0514"
-                                                            },
-                                                            "file_name": {
-                                                                "type": "string",
-                                                                "example": "IMG_0514.jpg"
-                                                            },
-                                                            "thumb": {
-                                                                "type": "string",
-                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
-                                                            },
-                                                            "uuid": {
-                                                                "type": "string",
-                                                                "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
-                                                            },
-                                                            "preview_url": {
-                                                                "type": "string",
-                                                                "example": ""
-                                                            },
-                                                            "original_url": {
-                                                                "type": "string",
-                                                                "example": "http://localhost/storage/10/IMG_0514.JPG"
-                                                            },
-                                                            "extension": {
-                                                                "type": "string",
-                                                                "example": "JPG"
-                                                            },
-                                                            "size": {
-                                                                "type": "integer",
-                                                                "example": 5199684
-                                                            },
-                                                            "folder_id": {
-                                                                "type": "integer",
-                                                                "example": null
-                                                            },
-                                                            "shelf_life": {
-                                                                "type": "string",
-                                                                "format": "date"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Folder not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Folder not found or deleted"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/trash": {
-            "post": {
-                "tags": [
-                    "Trash"
-                ],
-                "summary": "Trash structure display",
-                "description": "Send bearer token",
-                "operationId": "6cc79a09f632e9fc54f5793ee2ec6f08",
-                "responses": {
-                    "200": {
-                        "description": "Trash structure display",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "trash_lifespan": {
-                                                    "type": "integer",
-                                                    "example": 10
-                                                },
-                                                "folders": {
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "integer",
-                                                            "example": 5
-                                                        },
-                                                        "folder_name": {
-                                                            "type": "string",
-                                                            "example": "Holidays"
-                                                        },
-                                                        "created_by_id": {
-                                                            "type": "integer",
-                                                            "example": 1
-                                                        },
-                                                        "created_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        },
-                                                        "updated_at": {
-                                                            "type": "string",
-                                                            "format": "date-time"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "files": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "file_name": {
-                                                                "type": "string",
-                                                                "example": "IMG_0514.jpg"
-                                                            },
-                                                            "name": {
-                                                                "type": "string",
-                                                                "example": "IMG_0514"
-                                                            },
-                                                            "uuid": {
-                                                                "type": "string",
-                                                                "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
-                                                            },
-                                                            "thumb": {
-                                                                "type": "string",
-                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
-                                                            },
-                                                            "preview_url": {
-                                                                "type": "string",
-                                                                "example": ""
-                                                            },
-                                                            "original_url": {
-                                                                "type": "string",
-                                                                "example": "http://localhost/storage/10/IMG_0514.JPG"
-                                                            },
-                                                            "extension": {
-                                                                "type": "string",
-                                                                "example": "JPG"
-                                                            },
-                                                            "size": {
-                                                                "type": "integer",
-                                                                "example": 5199684
-                                                            },
-                                                            "folder_id": {
-                                                                "type": "integer",
-                                                                "example": 4
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/trash/delete": {
-            "delete": {
-                "tags": [
-                    "Trash"
-                ],
-                "summary": "Removing cart items",
-                "description": "Send bearer token, and element ids. key-value bindings can be repeated",
-                "operationId": "0716129c63a81c5162676dce98ce72cd",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "folder": {
-                                        "type": "string",
-                                        "example": "3"
-                                    },
-                                    "file": {
-                                        "type": "string",
-                                        "example": "20"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Removing cart items",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "All items removed"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Something went wrong..."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/trash/delete-all": {
-            "delete": {
-                "tags": [
-                    "Trash"
-                ],
-                "summary": "Removing all items",
-                "description": "Send bearer token",
-                "operationId": "13a20839b41786264882c245f2dddac3",
-                "responses": {
-                    "200": {
-                        "description": "Removing all items",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "All items removed"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Something went wrong..."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/trash/restore": {
-            "post": {
-                "tags": [
-                    "Trash"
-                ],
-                "summary": "Restore item (s)",
-                "description": "Send bearer token, and element ids. key-value bindings can be repeated",
-                "operationId": "8635d1efcc1b6942db9d472f96e4c054",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "folder": {
-                                        "type": "string",
-                                        "example": "3"
-                                    },
-                                    "file": {
-                                        "type": "string",
-                                        "example": "20"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Restore cart items",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "All items restored"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Something went wrong..."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
         "download/{uuid}": {
             "get": {
                 "tags": [
@@ -813,6 +360,459 @@
                                                 }
                                             },
                                             "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/home": {
+            "post": {
+                "tags": [
+                    "Root"
+                ],
+                "summary": "Structure from root",
+                "description": "Send bearer token",
+                "operationId": "fe582df20ab59b2edb80d36053b0eb04",
+                "responses": {
+                    "200": {
+                        "description": "Structure from root",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "folder": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "folder_name": {
+                                                            "type": "string",
+                                                            "example": "Holidays"
+                                                        },
+                                                        "created_by_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "updated_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "files": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514"
+                                                            },
+                                                            "file_name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514.jpg"
+                                                            },
+                                                            "thumb": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
+                                                            },
+                                                            "uuid": {
+                                                                "type": "string",
+                                                                "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
+                                                            },
+                                                            "preview_url": {
+                                                                "type": "string",
+                                                                "example": ""
+                                                            },
+                                                            "original_url": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/10/IMG_0514.JPG"
+                                                            },
+                                                            "extension": {
+                                                                "type": "string",
+                                                                "example": "JPG"
+                                                            },
+                                                            "size": {
+                                                                "type": "integer",
+                                                                "example": 5199684
+                                                            },
+                                                            "folder_id": {
+                                                                "type": "integer",
+                                                                "example": null
+                                                            },
+                                                            "shelf_life": {
+                                                                "type": "string",
+                                                                "format": "date"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Folder not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Folder not found or deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/trash": {
+            "post": {
+                "tags": [
+                    "Trash"
+                ],
+                "summary": "Trash structure display",
+                "description": "Send bearer token",
+                "operationId": "7b5cb9e0f09c63b4f515ca5f8614112b",
+                "responses": {
+                    "200": {
+                        "description": "Trash structure display",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "trash_lifespan": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "folders": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        },
+                                                        "folder_name": {
+                                                            "type": "string",
+                                                            "example": "Holidays"
+                                                        },
+                                                        "created_by_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "updated_at": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "files": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "file_name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514.jpg"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "IMG_0514"
+                                                            },
+                                                            "uuid": {
+                                                                "type": "string",
+                                                                "example": "5a3e86e4-c09d-4594-8bf4-be8776e8769f"
+                                                            },
+                                                            "thumb": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/47/conversions/1-(1)-thumb.jpg"
+                                                            },
+                                                            "preview_url": {
+                                                                "type": "string",
+                                                                "example": ""
+                                                            },
+                                                            "original_url": {
+                                                                "type": "string",
+                                                                "example": "http://localhost/storage/10/IMG_0514.JPG"
+                                                            },
+                                                            "extension": {
+                                                                "type": "string",
+                                                                "example": "JPG"
+                                                            },
+                                                            "size": {
+                                                                "type": "integer",
+                                                                "example": 5199684
+                                                            },
+                                                            "folder_id": {
+                                                                "type": "integer",
+                                                                "example": 4
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/trash/delete": {
+            "delete": {
+                "tags": [
+                    "Trash"
+                ],
+                "summary": "Removing cart items",
+                "description": "Send bearer token, and element ids. key-value bindings can be repeated",
+                "operationId": "edf3ba731d21e2fe055c4c8e17becc20",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "folder": {
+                                        "type": "string",
+                                        "example": "3"
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "example": "20"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Removing cart items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All items removed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/trash/delete-all": {
+            "delete": {
+                "tags": [
+                    "Trash"
+                ],
+                "summary": "Removing all items",
+                "description": "Send bearer token",
+                "operationId": "47577e34aa08c3b1c942b20030b30748",
+                "responses": {
+                    "200": {
+                        "description": "Removing all items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All items removed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/trash/restore": {
+            "post": {
+                "tags": [
+                    "Trash"
+                ],
+                "summary": "Restore item (s)",
+                "description": "Send bearer token, and element ids. key-value bindings can be repeated",
+                "operationId": "ded0f8d9ea053708906a937154abd7aa",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "folder": {
+                                        "type": "string",
+                                        "example": "3"
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "example": "20"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Restore cart items",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All items restored"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong..."
                                         }
                                     },
                                     "type": "object"
